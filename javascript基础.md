@@ -361,3 +361,67 @@ class Son extends Father{}
 
 事件冒泡是指事件从最具体的元素开始触发，即从层级最深的元素依次向上传递到层级浅的元素。
 
+## ajax（async js and xml）
+
+```js
+// 同步
+const isAsync = false
+const requstBody = null
+
+const xhr = new XMLHttpRequest()			// 创建xhr实例
+xhr.open('get', '/api/getMsg?id=2', isAsync)// 准备要发送的请求，（method，url，isAsync）
+xhr.send(requestBody)						// 正式发送请求，（请求体，一般post会用到）
+
+if (xhr.status >= 200 && xhr.status < 300 || xhr.status ==304) {
+    console.log(xhr.responseText)
+} else {
+    console.log('failed')
+}
+
+// 异步
+const xhr = new XMLHttpRequest()
+xhr.onreadystatechange = function() {
+    if (xhr.readyState == 4) {
+        if (xhr.status >= 200 && xhr.status < 300 || xhr.status ==304) {
+            console.log(xhr.responseText)
+        } else {
+            console.log('failed')
+        }
+    }
+}
+xhr.open('get', '/api/getMsg?id=2', true)
+xhr.setRequestHeader('MyHeader', 'MyValue')	// 设置请求头部字段，必须在open之后send之前设置
+xhr.setRequestHeader('content-type', '....') // 发送请求的时候一定记得设置content-type为自己发送的类型
+xhr.send(null)
+
+// 进度
+xhr.onprogress = function(e) {
+    if (e.lengthComputable) // 表示进度信息是否可用
+        {
+            console.log(e.position / event.totalSize + '%') // position表示接收到的字节数
+        }
+}
+
+// 可以取消
+xhr.abort()
+```
+
+## 简单请求和复杂请求
+
+### 复杂请求
+
+复杂请求就是定义了自定义请求头部，使用了除get、post外的方法，定义了不同请求体内容类
+
+复杂请求在第一次发送这种类型的请求时一共会发送两个请求
+
+1. 预检请求，使用Options方法，包含头部：Origin（源域名)、Access-Control-Request-Method(请求想要使用的方法)、Access-Control-Request-Header(请求定义的自定义头部)
+2. 正式请求
+
+### 简单请求
+
+不是复杂请求就是简单请求，就发送一次请求
+
+### *凭据请求
+
+如果设置请求属性xhr.withCredentials: true，则这个请求也是凭据请求，请求时会带有(cookie、HTTP认证和客户端ssl证书)，当然也要服务端允许带有才行; Access-Control-Allow-Credentials: true这条语句表示服务端允许带有凭据。
+
