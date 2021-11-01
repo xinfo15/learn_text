@@ -55,6 +55,282 @@ Array.isArray(arr)
 
 7. Symbol 符号是原始值，是唯一、不可变的，用来标识唯一的对象属性，一般是js开发者定义功能使用。
 
+## 函数定义调用和上下文创建的关系
+
+### 执行上下文是什么？（全局上下文、函数上下文、eval()创建的上下文）
+
+执行上下文就是代码执行的环境，规定了上下文中的变量和函数能访问哪些数据。
+
+### 函数在定义和调用的时候发生了什么
+
+#### 1. 函数定义
+
+函数定义的时候，会创建它的作用域链，预装载包含上下文的作用域链，存放在[[scope]]内部属性中
+
+#### 2. 函数调用
+
+函数调用时，会创建该函数的执行上下文；然后通过复制[[scope]]来创建函数的作用域链；接着到了预编译阶段，会创建函数的活动对象作为变量对象，并将它推入作用域链顶端。
+
+### 创建执行上下文的时候会发生什么
+
+#### 1. this绑定
+
+1. this绑定又分为直接调用和对象调用；
+2. 直接调用this一般等于window（严格模式除外），对象调用this一般等于该对象。
+
+#### 2. 创建词法环境
+
+1. 词法环境其实就是包含标识符和变量映射关系的一种结构。
+2. 包含环境记录和外部环境引用
+
+#### 3. 创建变量环境
+
+1. 变量环境和词法环境十分相似
+2. 在es6中有明显不同，前者用来存储函数和变量(let/const)的绑定
+3. 后者只用来储存var变量的绑定
+
+### 函数预编译
+
+1. 创建活动对象AO
+2. 找到所有声明的变量（var）和形参声明，去作为活动对象的属性，置为undefined
+3. 实参和形参值相统一，就是实参赋值给形参
+4. 找到所有函数声明（不是表达式！）去作为活动对象的属性（会覆盖变量声明），然后将函数体赋值给它
+5. js解释执行
+
+## 垃圾回收
+
+### 标记清理（常用）
+
+会表示所有在内存中的变量，然后去掉所有**在上下文中的变量**或**被上下文中变量引用的变量**的标记，之后再有标记的变量就一定不在上下文中，并不能被上下文中的变量访问，随后垃圾回收就会清理这些带标记变量并回收内存。
+
+### 引用计数
+
+对每个值都记录它被引用的次数，如果次数为0，则下一次垃圾回收就会回收这个值的内存
+
+```js
+举个栗子
+值：'value' 次数cnt：0
+let a = 'value' // cnt ++
+let b = a 		// cnt ++
+a = 'key'		// cnt --
+b = 'key'		// cnt -- = 0 ‘value’值下次被清理
+
+有个巨大的漏洞-》循环引用
+function problem() {
+    let a = {}
+    let b = {}
+    a.next = b
+    b.next = a
+}
+两个{}的引用次数都是2
+永远不会清0，所有他们会一直在内存中
+```
+
+## 内存泄露
+
+本不该在内存中的变量和函数，一直存在于内存中；
+
+一般就是误定义为全局变量和误使用闭包造成的。
+
+## 原型和原型链
+
+### 原型
+
+只要创建一个函数，就会在函数的prototype属性创建一个原型对象，用于给对象 共享方法和属性。
+
+### 原型链
+
+如果原型是另一个类型的实例，那么原型也有另一个原型，因此便形成了原型链。
+
+## 八大继承
+
+### 1. 原型链继承
+
+```js
+function Father() {
+    this.name = 'lizhengxin'
+    this.attr = {
+        age: 20,
+        gender: 'male'
+    }
+}
+Father.prototype.getName = () => console.log(this.name)
+
+function Son() {
+}
+Son.prototype = new Father()
+
+const obj = new Son()
+const obj1 = new Son()
+console.log(obj);
+
+console.log(obj.attr === obj1.attr) // true
+
+`缺点：
+1. 在父类构造函数中定义的引用类型属性，是实例间共享的
+2. 子类实例化时，不能向父类构造函数传参`
+```
+
+### 2. 盗用构造函数
+
+```js
+function Father(name) {
+	this.attr = {
+        name: name ?? 'lizhengxin',
+        age: 20
+    }
+   	this.getAttr() {
+        return this.attr
+    }
+}
+
+function Son(name) {
+    Father.apply(this, name)
+    this.type = 'son'
+}
+
+const obj1 = new Son()
+const obj2 = new Son('mayana')
+
+console.log(obj1)
+console.log(obj2)
+
+`优点：
+1. 解决了原型链继承的引用值共享问题
+2. 子类实例化的时候可以给父类构造函数传参了`
+
+`缺点：
+1. 父类函数只能定义在构造函数内，不能重用
+2. 不能使用父类原型上的方法和属性`
+```
+
+### 3. 组合继承（原型链 + 盗用构造函数）
+
+```js
+function Father(name) {
+    this.attr = {
+        name: name ?? 'default',
+        age: 20
+    }
+}
+Father.prototype.getAttr = function() {
+    return this.attr
+}
+
+function Son(name) {
+    Father.call(this, name)
+}
+
+Son.prototype = new Father()
+
+const obj1 = new Son('lizhengxin')
+const obj2 = new Son('mayana')
+
+console.log(obj1)
+console.log(obj2)
+console.log(obj1.getAttr === obj2.getAttr) // true
+
+`优点：
+1. 父类私有属性定义在构造函数内，共享方法和属性定义在原型上
+2. 子类可以访问父类原型上的方法和属性`
+
+`缺点：父类构造函数要被调用两次`
+```
+
+### 4. 原型式继承
+
+```js
+function object(o) {
+    function F() {}
+    F.prototype = o
+    return new F()
+}
+`在一个对象的基础上，建立一个新对象，相当于给传入的对象只醒了一次浅拷贝`
+
+`缺点：跟原型链模式一样，引用值会共享`
+```
+
+### 5. 寄生式继承
+
+```js
+function createAnthor(original) {
+    const clone = object(original)	// 在原对象基础上，建立一个新对象
+    clone.sayHi = function() {		// 并在原基础上，增强新对象
+        console.log('Hi')
+    }
+   	return clone
+}
+`缺点：
+1. 引用值会共享
+2. 函数不能重用`
+
+`为什么叫寄生式继承？
+我觉得是跟是否功能相同有关，就像原型式继承为什么不叫寄生式？那是因为新对象没有增加功能，和源对象一样，这种应该叫共生；而寄生式继承，新对象被增强了，所以就叫做寄生式，就想电影中的寄生兽一样，它在你的基础上建立，但是它最终会变得比你强！`
+```
+
+### 6. 寄生式组合继承
+
+```js
+inheritPrototype(Father, Son) {
+    const prototype = object(Father.prototype)	// 原型式继承父类原型
+    prototype.constructor = Son					// 增强
+    Son.prototype = prototype
+}
+
+function Father(name) {
+    this.attr = {
+        name: name || 'default',
+        age: 20
+    }
+}
+Father.prototype.getAttr = function() {
+    return this.attr
+}
+
+function Son(name) {
+    Father.call(this, name)
+}
+inheritPrototype(Father, Son)
+
+const obj1 = new Son('lizhengxin')
+const obj2 = new Son('mayana')
+
+`优点：解决了组合继承父类构造函数要调用两次的缺点`
+```
+
+### 7. 类继承类
+
+```js
+class Father {}
+
+class Son extends Father {}
+```
+
+### 8. 类继承构造函数
+
+```js
+function Father() {}
+
+class Son extends Father{}
+```
+
+## new的过程中发生了什么
+
+1. 在内存中创建一个新对象
+2. 这个新对象内的原型被赋值为构造函数的prototype原型属性
+3. 构造函数的this被赋值为这个新对象
+4. 逐行执行构造函数内的代码
+5. 如果构造函数返回一个非空对象，则返回这个对象；否则返回刚创建的新对象。
+
+## 箭头函数和普通函数的区别
+
+1. 箭头函数没有arguments
+2. 箭头函数没有this指针，只能使用包含上下文中的this
+3. 箭头函数不能使用super()，类构造普通函数中可以用
+4. 箭头函数不能使用new.target，普通函数可以
+5. 箭头函数不能用作构造函数
+6. 箭头函数没有prototype属性
+
 ## 期约
 
 ### 期约的原理就是状态机
