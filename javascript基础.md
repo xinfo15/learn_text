@@ -425,3 +425,65 @@ xhr.abort()
 
 如果设置请求属性xhr.withCredentials: true，则这个请求也是凭据请求，请求时会带有(cookie、HTTP认证和客户端ssl证书)，当然也要服务端允许带有才行; Access-Control-Allow-Credentials: true这条语句表示服务端允许带有凭据。
 
+# 手写js代码
+
+## call/apply/bind
+
+```js
+function myCall(thisPtr, ...params) {
+        if (typeof thisPtr !== 'object') {
+          thisPtr = {}
+        }
+        thisPtr.temp = this
+        const res = thisPtr.temp(...arrParams)
+        delete thisPtr.temp
+        return res
+      }
+      Function.prototype.myCall = myCall
+      // test.call(1, 19)
+      // test.myCall(1, 19)
+
+      function myApply(thisPtr, arrParams) {
+        if (typeof thisPtr !== 'object') {
+          thisPtr = {}
+        }
+        thisPtr.temp = this
+        const res = thisPtr.temp(...arrParams)
+        delete thisPtr.temp
+        return res
+      }
+      Function.prototype.myApply = myApply
+      // test.apply(1, {})
+      // test.myApply(1, {})
+
+      function myBind(thisPtr, arrArg) {
+        if (typeof thisPtr !== 'object') {
+          thisPtr = {}
+        }
+        arrArg = arrArg || []
+        const originalFunc = this
+
+        return function bound() {
+          if (new.target === bound) {
+            thisPtr = this
+          }
+          return originalFunc.myApply(thisPtr, arrArg.concat(...arguments))
+        }
+      }
+      Function.prototype.myBind = myBind
+
+      function test(age) {
+        console.log('blabla  : ', this.name, 'age : ', age)
+        this.gender = 'male'
+      }
+      const obj = { name: 'lizhengxin' }
+
+      // test.bind(obj)(20)
+
+      const bound = test.myBind(obj)
+      bound(20)
+      const res = new bound(20)
+      console.log(obj.gender);
+      console.log(res.gender)
+```
+
