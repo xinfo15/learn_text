@@ -429,61 +429,153 @@ xhr.abort()
 
 ## call/apply/bind
 
+### call
+
 ```js
 function myCall(thisPtr, ...params) {
-        if (typeof thisPtr !== 'object') {
-          thisPtr = {}
-        }
-        thisPtr.temp = this
-        const res = thisPtr.temp(...arrParams)
-        delete thisPtr.temp
-        return res
-      }
-      Function.prototype.myCall = myCall
-      // test.call(1, 19)
-      // test.myCall(1, 19)
-
-      function myApply(thisPtr, arrParams) {
-        if (typeof thisPtr !== 'object') {
-          thisPtr = {}
-        }
-        thisPtr.temp = this
-        const res = thisPtr.temp(...arrParams)
-        delete thisPtr.temp
-        return res
-      }
-      Function.prototype.myApply = myApply
-      // test.apply(1, {})
-      // test.myApply(1, {})
-
-      function myBind(thisPtr, arrArg) {
-        if (typeof thisPtr !== 'object') {
-          thisPtr = {}
-        }
-        arrArg = arrArg || []
-        const originalFunc = this
-
-        return function bound() {
-          if (new.target === bound) {
-            thisPtr = this
-          }
-          return originalFunc.myApply(thisPtr, arrArg.concat(...arguments))
-        }
-      }
-      Function.prototype.myBind = myBind
-
-      function test(age) {
-        console.log('blabla  : ', this.name, 'age : ', age)
-        this.gender = 'male'
-      }
-      const obj = { name: 'lizhengxin' }
-
-      // test.bind(obj)(20)
-
-      const bound = test.myBind(obj)
-      bound(20)
-      const res = new bound(20)
-      console.log(obj.gender);
-      console.log(res.gender)
+  if (typeof thisPtr !== 'object') {
+    thisPtr = {}
+  }
+  thisPtr.temp = this
+  const res = thisPtr.temp(...arrParams)
+  delete thisPtr.temp
+  return res
+}
+Function.prototype.myCall = myCall
 ```
+
+### apply
+
+```js
+function myApply(thisPtr, arrParams) {
+  if (typeof thisPtr !== 'object') {
+    thisPtr = {}
+  }
+  thisPtr.temp = this
+  const res = thisPtr.temp(...arrParams)
+  delete thisPtr.temp
+  return res
+}
+Function.prototype.myApply = myApply
+```
+
+### bind
+
+```js
+function myBind(thisPtr, arrArg) {
+  if (typeof thisPtr !== 'object') {
+    thisPtr = {}
+  }
+  arrArg = arrArg || []
+  const originalFunc = this
+
+  return function bound() {
+    // 如果new 构造函数
+    if (this instanceof bound) {
+      // 构造函数的 this指针 要指向所创建的对象，就是现在this
+      thisPtr = this
+      // 实例的原型应该被赋值为原来函数的原型
+      this.__proto__ = originalFunc.prototype
+    }
+    return originalFunc.myApply(thisPtr, arrArg.concat(...arguments))
+  }
+}
+Function.prototype.myBind = myBind
+
+function test(age) {
+  console.log('blabla  : ', this.name, 'age : ', age)
+  this.gender = 'male'
+}
+const obj = { name: 'lizhengxin' }
+
+// test.bind(obj)(20)
+
+const bound = test.myBind(obj)
+bound(20)
+const res = new bound(20)
+console.log(obj.gender);
+console.log(res.gender)
+```
+
+## new
+
+```js
+function myNew(func, ...args) {
+    const newObj = new Object()
+    newObj.__proto__ = func.prototype
+    const res = func.call(func, ...args)
+    // 如果构造函数返回非空对象，则返回该对象
+    if (res !== null && typeof res === 'object' && Object.keys(res).length !== 0)
+        return res
+    // 否则返回新对象
+    return newObj
+}
+```
+
+## Promise.all()
+
+```js
+function myPromiseAll(arrArgs) {
+    if(!Array.isArray(arrArgs)) throw Error('参数必须是数组')
+    
+    return new Promise((resolve, reject) => {
+        let cnt = 0;
+        const len = arrArgs.length
+        const arrAns = []
+        arrArgs.forEach((item, idx) => {
+            // resolve包装一下
+            Promise.resolve(item).then((res) => {
+                arrAns[idx] = res
+                cnt ++ 
+                if (cnt >= len) resolve(arrAns)
+            })
+        })
+    })
+}
+```
+
+## Promise.race()
+
+```js
+function myPromiseRace(arrArg) {
+    if (!Array.isArray(arrArg)) throw Error('参数必须是数组')
+    
+    return new Promise((resolve, reject) => {
+        
+        arrArgs.forEach((item, idx) => {
+            Promise.resolve(item).then((res) => {
+                resolve(res)
+            }).catch((err) => {
+                reject(err)
+            })
+        })
+    })
+}
+```
+
+## Ajax
+
+```js
+const xhr = new XMLHttpRequest()
+xhr.open('post', '/api/login', true)
+xhr.setRequestHeader('Content-Type', 'application/json')
+xhr.send(JSON.stringify({
+    username: 'lizhengxin',
+    password: 'lizhengxin'
+}))
+
+xhr.onreadystatechange = function() {
+    if (xhr.readyState === 4) {
+        if (xhr.status >= 200 && xhr.status < 300 || xhr.status === 304) {
+			console.log(xhr.responseText)
+        } else {
+            console.log('failed')
+        }
+    }
+}
+```
+
+## 扁平化数组
+
+
 
