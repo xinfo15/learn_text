@@ -577,5 +577,19 @@ xhr.onreadystatechange = function() {
 
 ## 扁平化数组
 
-
+```js
+function flatArray(arr) {
+    if (!Array.isArray(arr)) throw Error('参数必须是数组')
+    
+    let ans = []
+    arr.forEach((item, idx) => {
+      	if (Array.isArray(item)) {
+            ans = ans.concat(flatArray(item))
+        } else {
+            ans.push(item)
+        }
+    })
+    return ans
+}
+```
 
