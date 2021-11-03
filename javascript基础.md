@@ -425,6 +425,21 @@ xhr.abort()
 
 如果设置请求属性xhr.withCredentials: true，则这个请求也是凭据请求，请求时会带有(cookie、HTTP认证和客户端ssl证书)，当然也要服务端允许带有才行; Access-Control-Allow-Credentials: true这条语句表示服务端允许带有凭据。
 
+## 闭包
+
+1. 闭包就是引用了其他函数中的变量对象的函数
+
+2. 一般发生在嵌套函数，而且内层函数被返回并引用；不返回被引用，则变量对象会被垃圾回收
+3. 会导致其他函数的变量对象一直不会销毁
+
+
+
+
+
+
+
+
+
 # 手写js代码
 
 ## call/apply/bind
@@ -578,18 +593,62 @@ xhr.onreadystatechange = function() {
 ## 扁平化数组
 
 ```js
-function flatArray(arr) {
-    if (!Array.isArray(arr)) throw Error('参数必须是数组')
-    
-    let ans = []
-    arr.forEach((item, idx) => {
-      	if (Array.isArray(item)) {
-            ans = ans.concat(flatArray(item))
+function flattenArray(root) 
+{
+    if (!Array.isArray(root)) throw Error('参数必须是数组')
+    let arrAns = []
+    root.forEach((item, idx) => {
+        if (Array.isArray(item)) 
+        {
+            arrAns = arrAns.concat(flattenArray(item))
         } else {
-            ans.push(item)
+            arrAns.push(item)
         }
     })
+    return arrAns
+}
+```
+## 数组去重
+
+```js
+// hash方式，O(n)
+function removeRepetition(arr) {
+    if (!Array.isArray(arr)) throw Error('参数必须是数组')
+    const visit = {}
+    const ans = []
+    
+    arr.forEach((item, idx) => {
+        if (visit[item] === undefined) 
+        {
+            ans.push(item)
+            visit[item] = true
+        }
+    })
+    
     return ans
 }
+
+// sort方式，O(nlogn)
+function removeRepetition(arr) {
+	arr.sort()
+    const len = arr.length
+    for (let i = 0, j = 0; i < len; i ++)
+    {
+        if (!i || arr[i] !== arr[i - 1])
+        {
+            arr[j ++ ] = arr[i]
+        }
+    }
+    arr.length = j
+    return arr
+}
+```
+
+## 监听数组改变
+
+```js
+const reflect = {}
+reflect.push = Array.prototype.push
+reflect.pop = A
 ```
 
