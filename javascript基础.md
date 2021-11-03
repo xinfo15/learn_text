@@ -432,7 +432,11 @@ xhr.abort()
 2. 一般发生在嵌套函数，而且内层函数被返回并引用；不返回被引用，则变量对象会被垃圾回收
 3. 会导致其他函数的变量对象一直不会销毁
 
+## this指针
 
+1. 只要是直接调用 func(), 那么this就等于window（严格模式等于undefined）
+2. 只要是对象方法调用，那么this就等于该对象
+3. call\apply\bind调用则this是第一个参数
 
 
 
@@ -650,5 +654,383 @@ function removeRepetition(arr) {
 const reflect = {}
 reflect.push = Array.prototype.push
 reflect.pop = A
+```
+
+## 防抖节流函数
+
+### 防抖
+
+```js
+function debounce(callback, delay) {
+    let timer
+    return (...args) => {
+        clearTimeout(timer)
+        timer = setTimeout(() => {
+           callback(...args) 
+        }, delay)
+    }
+}
+```
+
+### 节流
+
+```js
+function throttle(callback, delay) {
+    let timer
+    return (...args) => {
+        if (timer === undefined) {
+            timer = setTimeout(() => {
+                callback(...args)
+                timer = undefined
+            }, delay)
+        }
+    }
+}
+```
+
+
+
+
+
+# css基础
+
+## 盒子模型
+
+盒子模型就是容纳html元素的一个容器，有宽高、边距、边框等
+
+### 普通盒子(box-sizing: content-box)
+
+宽高就是自身的宽高，然后边框和内边距不计算在内
+
+### 怪异盒子(box-sizing: border-box)
+
+宽高 = 自身宽高 + padding + border
+
+## BFC块级格式化上下文
+
+1. 定义：BFC是一个完全独立渲染的空间，让其子元素不受外部元素的任何影响。
+
+2. 作用：用于解决高度塌陷、margin重叠、浮动问题
+
+3. 实现：
+
+   ```js
+   1. float 不为none 脱离文档流
+   2. position 是absolute和fixed 脱离文档流
+   2. display 为inline-block, flex, inline-flex, table, table-cell, inline-table
+   3. overflow 不为visible
+   ```
+
+## 水平垂直居中
+
+### relative + transform 子元素不固定宽高
+
+```css
+.son {
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+```
+
+### flex 子元素不固定宽高
+
+```js
+.father{
+    display: flex;
+    justify-content: center;
+    aligh-items: center;
+}
+```
+
+### absolute + margin 子元素固定宽高
+
+```js
+.father {
+    position: relative;
+}
+
+.son {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 200px;
+    height: 200px;
+    margin: auto;
+}
+```
+
+## 两栏布局
+
+### float  + margin
+
+```js
+.left {
+   	float: left;
+    width: 200px
+}
+.right {
+    margin-left: 210px
+}
+```
+
+### float + BFC
+
+```js
+.left {
+    float: left;
+    width: 200px
+}
+.right {
+    overflow: hidden;
+}
+```
+
+### flex
+
+```js
+.wrapper {
+    display: flex
+    align-items: flex-start;
+}
+.left {
+    width: 200px;
+    flex-shrink: 0; // flex的第二个参数禁止收缩
+}
+.right {
+    flex: 1 1 auto;
+}
+```
+
+### absolute+ margin
+
+```js
+.left {
+    position: absolute;
+    width: 200px
+}
+.right {
+    margin-left: 200px
+}
+```
+
+### absolute + absolute . left
+
+```js
+.left {
+    position: absolute;
+    width: 200px
+}
+.right {
+   	position: absolute;
+    left: 200px;
+    right: 0;
+}
+```
+
+## 三栏布局
+
+### 流体布局(浮动布局) 跟 position差不多
+
+```html
+<style>
+	.wrapper {
+        overflow: auto;
+        }
+    .left {
+        float: left;
+        width: 200px
+    }
+    .right {
+        float: right;
+        width: 200px;
+    }
+    .main {
+        margin: 0 200px; // marin法
+        overflow: auto: // BFC法
+    }
+</style>
+<div class="wrapper">
+    <div class="left">
+        
+    </div>
+    <div class="right">
+        
+    </div>
+    <div class="main">
+        
+    </div>
+</div>
+```
+
+### 圣杯
+
+```html
+原理：外部盒子给出两栏宽度的padding，三个元素都浮动，通过margin 和 relative 调整两栏变到一行去
+缺点：屏幕宽度小于两栏宽度 + padding时，布局会乱
+`类书写的顺序，就是元素排版的顺序`
+<style>
+    .wrapper {
+        padding: 0 200px;
+        .main {
+            float: left;
+            width: 100%;
+        }
+        .left {
+            float: left;
+            width: 200px;
+            margin-left: -100%;
+            position:relative;
+            left: -200px;
+        }
+        .right {
+            float: right;
+            width: 200px
+            margin-left: -100%;
+            position:relative;
+            right: -200px;
+        }
+    }
+</style>
+```
+
+### 双飞翼（完满三栏）
+
+```html
+原理：在圣杯的基础上，删去了外部容器的padding，让外部容器宽度100%的浏览器宽度，margin-left参照的宽度变大，因此不需要relative，也就解决了宽度小于两栏宽度+padding时布局会乱的问题（因为relative元素一直在原地）；重点通过在main中加了main-content，使用其margin空出两栏位置
+
+`类书写的顺序，就是元素排版的顺序`
+<style>
+    .wrapper {
+        overflow: auto;
+        
+        .main {
+            float: left;
+            width: 100%;
+            
+            .main-content {
+                margin: 0 200px;
+            }
+        }
+        
+        .left {
+            float: left;
+            margin-left: -100%;
+            width: 200px;
+        }
+        
+        .right {
+            float: right;
+            margin-left: -100%;
+            width: 200px;
+        }
+    }
+    
+</style>
+```
+
+## 选择器优先级
+
+1. !important 是最高优先级
+2. css将 **行内样式、id选择器、类/伪类/属性选择器、元素/伪元素选择器，按次序划分为一个四位元组(0, 0, 0, 0)**；比如：每多一个类选择器第三位就 + 1，比较方式就是从前向后一次比较，类似字符串比较
+3. 其余就不计算在优先级内
+
+## 文字超出省略号
+
+### 单行
+
+```js
+.one-line {
+	overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: no-wrap;
+}
+```
+
+### 多行
+
+```js
+.many-lines {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2
+}
+```
+
+## z-index在什么时候有效
+
+当position被设置为 absolute, fixed, relative, sticky时，元素的层级会变得比普通元素高，同时就可以使用z-index进行层级调整
+
+注意：
+
+1. 设置z-index层级只对兄弟节点有效
+2. 当position：sticky时，将z-index设置为<=0时，会使sticky本身功能丧失
+
+
+
+
+
+
+
+# sql语句复习
+
+## distinct 去重
+
+```sql
+select DISTINCT user_id from tb_blog
+```
+
+## insert into 表名 (列名) values (列值)
+
+```sql
+insert into tb_admin (admin_id, account, password, create_time) values (null, 'myn', '123456', now())
+```
+
+## update 表名 set 字段名=字段值
+
+```sql
+update tb_admin set password = 'sbmayana' where admin_id = 2
+```
+
+## delete from 表名 where 键=值
+
+```sql
+delete from tb_admin where admin_id = 2
+```
+
+## limit 0, 5 等价于 limit 5 offset 0
+
+```sql
+select * from tb_blog limit 5 offset 0 // 表示从第0条记录开始，取5条记录
+```
+
+## like通配符，%表示0个或多个字符，_代表一个字符
+
+```sql
+select nickname from tb_user where nickname like '[lunalizhengxin]%'
+```
+
+## in 元组
+
+```sql
+select nickname from tb_user where nickname in ('lizhengxin', 'luna')
+```
+
+## union + select语句
+
+```sql
+select * from tb_admin union select user_id, nickname, password, account, 5, 6 from tb_user
+// 将两个多个select语句查询到的数据合并到第一个select的列下，要求后面的select语句的列数要与第一个select一致
+```
+
+## 给表中字段新建索引create index 索引名 on 表名 (列1，列2,...)
+
+```js
+// （加快查询速度，但是会减慢更新速度，因为索引也需要更新）
+CREATE INDEX PersonIndex ON Person (LastName, FirstName)
 ```
 
