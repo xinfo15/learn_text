@@ -974,6 +974,104 @@ function throttle(callback, delay) {
 
 
 
+# vue
+
+## 生命周期
+
+1. beforeCreate 实例初始化之后，设置数据监听、事件监听、属性、方法之前调用
+2. created 实例创建完成后调用，即数据监听、事件监听、属性、方法被配置完毕后调用
+3. beforeMount 挂载开始之前调用
+4. mounted 实例挂载完后调用，但不保证所有子组件都挂载完成
+5. beforeUpdate 数据修改后，dom渲染前调用
+6. updated 修改后的数据已经渲染到dom之后调用，但不保证的所有子组件都渲染完成
+7. activated 被keep-alive缓存的组件激活时调用
+8. deactivated 被keep-alive缓存的组件失活时调用
+9. beforeDestroy 实例销毁前调用，此时实例完全可用
+10. destroyed 实例销毁后调用
+
+## 组件
+
+组件是可复用的vue实例
+
+## 插槽
+
+插槽是内容分发的出口，一般用于封装组件，封装的组件只实现一个通用的框架，具体的内容需要开发者自己提供
+
+### 具名插槽
+
+设置了名字的插槽，叫做具名插槽，默认名字为：default
+
+```js
+Vue.component('son', {
+    template: '<div>  <slot name="nameSlot"></slot>  </div>'
+    created() {
+    	// 在子组件中通过$slot.插槽名，可以获取父组件插槽中的内容
+    	console.log(this.$slot.default)
+	}
+})
+
+// 在其他组件中使用
+// v-slot 可以缩写为 # 
+<son> <template v-slot:nameSlot> 你的内容 </template> </son>
+```
+
+### 作用域插槽
+
+作用域插槽就是让插槽内容能够访问子组件中的数据，通过给<slot>元素设置属性（插槽prop）实现
+
+```js
+Vue.component('son', {
+    template: '<div>  <slot name="nameSlot" :user="user"></slot>  </div>'
+})
+
+// 在其他组件中使用，通过带值得 v-slot 引用 插槽prop
+<son> <template v-slot:nameSlot="user"> 你的内容 {{ user.nickname }} </template> </son>
+```
+
+## 动态组件和异步组件
+
+1. 动态组件是指动态生成组件 
+
+   ```js
+   // 通过is属性实现
+   <component :is="componentName"></component>
+   ```
+
+2. 异步组件是指 按需异步加载组件
+
+   ```js
+   Vue.component('component1', () => import('@/components/component1'))
+   ```
+
+   
+
+## 组件data为什么一定要定义成函数
+
+因为组件是可以用来创建多个实例，如果data还是一个对象的话，那么所有实例将引用同一个数据对象；使用函数就不会这样，函数在创建一个组件实例的时候会被调用，然后返回一个数据对象的副本；
+
+## props自定义属性
+
+1. props对于基本数据类型是单向数据流的，父组件发生改变会传递到子组件，子组件一般不循序改变props
+2. props对于引用类型，子组件可以改变引用类型的属性，因为是按引用值传递，所以父组件会跟着改变
+3. props可以执行验证等操作
+
+## computed计算属性
+
+1. 计算属性的结果会被缓存（**并不是访问一次就计算一次**），除非依赖的**响应式**属性改变了才会重新计算（如果某个属性不是响应式则不会重新计算）
+2. 用于解决在模板中的进行复杂逻辑计算难以维护的问题 
+3. 用于一个属性需要随着其他属性变动而变动的情况
+4. 默认情况下是getter的回调，可以通过设置setter来达到重新赋值给计算属性时，在回调中按特定规则更新依赖
+5. 因为getter是通过同步执行一次来计算结果的，所以执行异步操作对结果没有任何影响
+
+## watch监听属性
+
+1. watch用于监听数据的变化
+2. 用于数据变化时执行异步操作或开销比较大的操作
+
+
+
+
+
 
 
 # sql语句复习
@@ -1033,4 +1131,190 @@ select * from tb_admin union select user_id, nickname, password, account, 5, 6 f
 // （加快查询速度，但是会减慢更新速度，因为索引也需要更新）
 CREATE INDEX PersonIndex ON Person (LastName, FirstName)
 ```
+
+## Date日期类函数
+
+### now()，curdate(), curtime()
+
+```sql
+SELECT now(), curdate(), curtime()
+
+now() 表示当前的日期的datetime类型
+curdate() 当前日期的date类型
+curtime() 当前日期的time类型
+```
+
+![image-20211104101603459](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211104101603459.png)
+
+### date(日期或时间) 提取日期或时间中的日期(date)部分
+
+```sql
+SELECT *, date(create_time) from tb_blog
+```
+
+![image-20211104102053136](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211104102053136.png)
+
+### extract(部分名 from 日期时间字段名) 提取日期时间中的部分
+
+```sql
+SELECT *, extract(DAY_MICROSECOND
+ from create_time), extract(DAY_MICROSECOND
+ from test_date), extract(DAY_MICROSECOND
+ from test_time) from tb_blog
+
+`部分名：`
+MICROSECOND
+SECOND
+MINUTE
+HOUR
+DAY
+WEEK
+MONTH
+QUARTER
+YEAR
+SECOND_MICROSECOND
+MINUTE_MICROSECOND
+MINUTE_SECOND
+HOUR_MICROSECOND
+HOUR_SECOND
+HOUR_MINUTE
+DAY_MICROSECOND
+DAY_SECOND
+DAY_MINUTE
+DAY_HOUR
+YEAR_MONTH
+```
+
+### DATE_ADD(date, interval value type) 函数向日期添加指定的时间间隔
+
+```sql
+select date_add(create_time, interval 30 day) from tb_blog // 加三十天
+`type值：`
+MICROSECOND
+SECOND
+MINUTE
+HOUR
+DAY
+WEEK
+MONTH
+QUARTER
+YEAR
+SECOND_MICROSECOND
+MINUTE_MICROSECOND
+MINUTE_SECOND
+HOUR_MICROSECOND
+HOUR_SECOND
+HOUR_MINUTE
+DAY_MICROSECOND
+DAY_SECOND
+DAY_MINUTE
+DAY_HOUR
+YEAR_MONTH
+```
+
+### DATE_SUB(date, interval value type) 函数向日期减去指定的时间间隔
+
+```sql
+select test_time, date_sub(now(), interval 30 day), datediff(date_sub(now(), interval 30 day), test_time) from tb_blog
+```
+
+### DATEDIFF(date1, date2) 函数返回第一个日期减去第二个日期的天数
+
+```sql
+select test_time, date_sub(now(), interval 30 day), datediff(date_sub(now(), interval 30 day), test_time) from tb_blog
+```
+
+### date_format(date, format) 格式化日期
+
+```sql
+select create_time, date_format(create_time, '%Y-%m-%d %H:%i:%s') from tb_blog
+```
+
+
+
+
+
+
+
+# 网络
+
+## 对称加密和非对称加密
+
+### 对称加密
+
+1. 对称加密是指 加密 和 解密的两方使用相同的秘钥
+2. 优点：加密、解密速度快
+3. 缺点：在第一次交换秘钥的过程中，容易暴露给别人
+
+### 非对称加密
+
+1. 非对称加密是指 加密 和 解密的两方使用不同的秘钥进行加密和解密（用公钥加密后的数据，只有私钥能解密）
+2. 优点：使用两个秘钥，安全性较高，解决了第一次交换秘钥的过程中，容易暴露的问题
+3. 缺点：加密、解密的过程会比对称加密慢很多
+
+
+
+## [HTTPS的握手过程](https://segmentfault.com/a/1190000021494676#comment-area)
+
+安全原理，结合了对称加密和非对称加密的优点，使用非对称加密传输 对称加密的秘钥，弥补了在传输过程中可能被截取对称加密秘钥的问题 和 完全使用非对称加密速度远比对称加密慢很多的问题
+
+<img src="https://segmentfault.com/img/bVbCCMD" alt="SSL : TLS 握手过程"  />
+
+1. **client hello**消息：客户端向服务端发送**client hello**消息发起握手请求，该消息包含了客户端所支持的 **TLS版本**、**加密算法的组合**以及一个随机字符串"**client random**"
+2. "server hello"消息：服务端收到握手请求向服务端返回“server hello”消息，该消息包含了**`CA`证书、选择的加密算法组合**以及一个随机字符串"**server random**"
+3. **premaster secret**字符串：客户端收到服务端**server hello**消息后，进行证书验证，并从证书中获取**公钥**，然后生成下一个随机字符串**premaster secret**将其用公钥加密后，发送给服务器
+4. 服务端收到客户端发来的**premaster secret**字符串，用私钥将其解密
+5. 客户端和服务器使用相同的加密算法对 **client random、server random、premaster secret**进行加密生成对称加密秘钥key
+6. 客户端发送经过key加密过的**finished**信号
+7. 服务端发送经过key加密过的**finished**信号
+8. 握手完成
+
+## HTTP和HTTPS的区别
+
+1. 最重要的区别就是安全，HTTP明文传输，没有对数据进行加密安全性较差；HTTPS（HTTP + TLS/SSL）数据传输过程加密安全性较好
+2. 使用HTTPS需要去专门的机构申请CA证书，需要花费一定费用
+3. HTTP页面响应速度比HTTPS快，由于加了一层安全层，建立连接的过程更复杂，需要交换更多数据；而且加密解密的过程也需要时间，难免会变慢
+4. HTTP和HTTPS使用的端口也不一样，前者用443，后者用80
+
+## HTTP1.0 和 HTTP1.1和HTTP2.0的区别
+
+### HTTP1.0 和 HTTP1.1的区别
+
+1. **缓存处理**
+
+   **HTTP1.0**主要使用If-Modified-Since和Expires来做为缓存判断的标准，**HTTP1.1**则新增了更多缓存控制策略Entity tag、If-Unmodified-Since、If-Match、If-None-Match、cache-control等等。
+
+2. **长连接**
+
+   **HTTP1.0**默认短连接，即没发送一次HTTP请求就要新建一个TCP连接，浪费了很多资源在新建连接和销毁连接上；**HTTP1.1**则默认长连接，即建立一个TCP连接可以很松很多条HTTP请求，减少了议和关闭连接的消耗。
+
+3. **带宽优化**
+
+   **HTTP1.0**不支持发送部分数据，例如只需要某个对象的一部分，而服务端却把真个对象都发送了过来，导致了带宽的浪费；HTTP1.0并且不支持断点续传。**HTTP1.1**在请求头引入Range头部，它允许只请求资源的一部分（返回码为206 partial content），并且支持断点续传，解决了1.0带宽浪费的问题。
+
+4. **Host域头部**
+
+   **HTTP1.0**中认为每台服务器都绑定一个唯一的IP地址，因此请求中并没有传递主机域（hostname）。随着虚拟主机技术的发展，在一台物理服务器上可以存在多个虚拟主机，并且它们共享一个IP地址。**HTTP1.1**的请求消息的响应消息都支持host域，而且请求消息中没有host域会报错。
+
+5. **HTTP1.0新增24个错误状态码**
+
+### HTTP2.0 和 HTTP1.x 的区别
+
+1. **二进制数据格式**
+
+   **HTTP1.x**使用文本格式数据存在天然缺陷；**HTTP2.0**直接使用二进制格式数据，在应用层和传输层之间增加了一个二进制分帧层，在兼容HTTP1.x的基础上，改进传输性能，实现低延迟和高吞吐量。
+
+2. **多路复用**
+
+   **HTTP2.0**多路复用允许同时通过单一的TCP连接发送多重请求-响应消息。即使连接共享，提高连接的利用率，同个域名只需要占用一个TCP连接。**HTTP1.1**对同一域名的TCP并行连接数有限制一般为4~5个，超过限制则会阻塞，可以通过使用多个域名解决，但是会有很多TCP连接建立，由于拥塞控制，每个TCP刚建立会经历慢启动，会大大降低传输速度；还会产生多个TCP连接竞争带宽的情况。
+
+3. **header压缩**
+
+   **HTTP1.x** header中含有大量数据，并且每次发送请求都会重复发送；**HTTP2.0** 使用 HPACK 算法对header的数据进行压缩，通讯双方各自缓存一份 header fields 表，然后实行差量更新header，就只需要传输差量就行，这样就避免了重复传输。
+
+4. **服务端推送**
+
+   服务端推送是一种在客户端请求之前发送数据的机制。
+
+   服务端可以在发送页面 HTML 时主动推送其它资源，而不用等到浏览器解析到相应位置，发起请求再响应。例如服务端可以主动把 JS 和 CSS 文件推送给客户端保存到本地缓存，而不需要客户端解析 HTML 时再发送这些请求。
 
