@@ -1414,14 +1414,9 @@ HTTP定义了这些报文的结构以及交换方式；
 
 1. GET参数通过url传递；POST参数放在请求体中
 2. GET请求在url中存放的参数是有长度限制的（一般为2k）；POST则没有
-3. GET比POST要安全一些，因为GET参数放在url中，不能用来传递敏感信息
-4. GET请求只能进行url编码；POST请求可以多种编码（form-data、urlencoded、json、xml）
-5. GET请求浏览器会主动Cache；POST则不会
-6. GET请求参数会完整保存到浏览器历史记录里；POST则不会
-7. GET和POST本质上都是TCP链接，并无差别。但是由于HTTP规定，导致它们在应用过程中有了一些不同
-8. GET产生一个TCP报文；POST产生两个TCP报文
-9. 对于GET方式的请求，浏览器会把http header和data一并发送出去，服务器响应200(返回数据)
-10. 而对于POST，浏览器先发送header，服务器响应100 continue，浏览器再发送data，服务器响应200 ok(返回数据)。而在网络环境差的情况下，两次包的TCP在验证数据包完整性上，有非常大的优点。
+3. GET请求只能进行url编码；POST请求可以多种编码（form-data、urlencoded、json、xml）
+4. GET请求会被浏览器主动缓存，留下历史记录；POST则不会
+5. GET产生一个TCP报文；POST产生两个TCP报文，对于POST，浏览器先发送header，服务器响应100 continue，浏览器再发送data，服务器响应200 ok(返回数据)。而在网络环境差的情况下，两次包的TCP在验证数据包完整性上，有非常大的优点。
 
 #### 浏览器 强缓存 和 协商缓存
 
