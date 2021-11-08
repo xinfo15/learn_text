@@ -4,17 +4,33 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>判断两个文件是否相同</title>
     <style>
+      html {
+        background-color: rgb(238, 238, 238);
+      }
+      body {
+        width: 70%;
+        margin: 0 auto;
+      }
+      header {
+        margin: 20px 0;
+        font-size: 30px;
+        text-align: center;
+        padding: 30px 0;
+        background-color: white;
+        box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+        border-radius: 8px;
+      }
+
       .wrapper {
         display: flex;
         justify-content: space-around;
-        margin-top: 10px;
       }
 
       .file1-box,
       .file2-box {
-        width: 30%;
+        flex: 1;
         min-height: 400px;
         box-sizing: border-box;
         font-size: 40px;
@@ -22,23 +38,39 @@
         justify-content: center;
         align-items: center;
         border-radius: 30px;
-        border: 10px dashed;
+        /* border: 10px dashed; */
+        background-color: white;
+        box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
       }
 
       .file1-box {
-        border-color: rgb(255, 255, 27);
+        /* border-color: rgb(255, 255, 27); */
+        margin-right: 100px;
       }
 
       .file2-box {
-        border-color: yellowgreen;
+        /* border-color: yellowgreen; */
       }
 
       button,
-      #res {
+      #res:not(:empty) {
+        margin-top: 20px;
         font-size: 30px;
-        width: 80%;
+        width: 100%;
         min-height: 50px;
-        margin: 10px 10%;
+        
+        background-color: rgb(255, 255, 255);
+        box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+        border: none;
+        padding: 10px;
+        box-sizing: border-box;
+      }
+      
+      button {
+        cursor: pointer;
+        background-color: rgb(24,144,255);
+        color: white;
+        border-radius: 8px;
       }
 
       .error {
@@ -50,6 +82,7 @@
     </style>
   </head>
   <body>
+    <header>判断两个文件是否相同，如果不同，输出不同的字节和不同的字符</header>
     <div class="wrapper">
       <div class="file file1-box">请拖入第一个文件</div>
       <div class="file file2-box">请拖入第二个文件</div>
@@ -87,7 +120,7 @@
             console.log(file)
 
             fileBox.file = file
-            fileBox.innerHTML = file.name
+            fileBox.innerHTML = '文件名：' + file.name
 
             // 通过数组缓存读取文件
             const frArrBuffer = new FileReader()
@@ -96,7 +129,7 @@
               console.log(this.result)
 
               fileBox.arrayBuffer = this.result
-              fileBox.innerHTML += '<br>' + 'size：' + this.result.byteLength + '字节'
+              fileBox.innerHTML += '<br>' + '文件大小：' + this.result.byteLength + '字节'
             }
 
             // 通过字符读取文件
@@ -128,18 +161,14 @@
 
       // 找到当前字节，对应的字符
       function findChar(arr, n, string) {
-        // for (let i = 1; i < arr.length; i++) {
-        //   if (n > arr[i - 1] && (arr[i + 1] === undefined || n < arr[i + 1])) {
-        //     // 由于byteMapCharTwo数组为了方便计算前缀和，所以下标从1开始；而string下标还是从0开始，所以需要减1
-        //     return `对应文件的第 ${i} 个字符：${string[i - 1]}`
-        //   }
-        // }
-
-        // 从后往前找，找第到第一个字节比他小的后一个，就是对应的字符的字节
-        for (let i = arr.length - 1; i > 0; i--) {
+        // 从后往前找，找第到第一个字节比他小的后一个，就是对应的字符范围内的字节
+        for (let i = arr.length - 1; i >= 0; i--) {
           if (arr[i] < n) {
             // 由于byteMapCharTwo数组为了方便计算前缀和，所以下标从1开始；而string下标还是从0开始，所以需要减1
             i += 1
+            // 字符不存在
+            if (string[i - 1] === undefined) break
+
             return `对应文件的第 ${i} 个字符：${string[i - 1]}`
           }
         }
@@ -149,15 +178,21 @@
 
       // 比较两个文件的不同
       async function compare() {
-        const file1Box = document.querySelector('.file1-box')
-        const file2Box = document.querySelector('.file2-box')
+        // 读取文件数据的存储位置
+        const fileBoxOne = document.querySelector('.file1-box')
+        const fileBoxTwo = document.querySelector('.file2-box')
         // 读取文件的缓存
-        const fileBufferOne = file1Box.arrayBuffer
-        const fileBufferTwo = file2Box.arrayBuffer
+        const fileBufferOne = fileBoxOne.arrayBuffer
+        const fileBufferTwo = fileBoxTwo.arrayBuffer
+
+        if (!(fileBufferOne && fileBufferTwo)) {
+          alert('请选择两个文件后，再点击比较！')
+          return
+        }
 
         // 读取文件的字符
-        const fileStringOne = file1Box.string
-        const fileStringTwo = file2Box.string
+        const fileStringOne = fileBoxOne.string
+        const fileStringTwo = fileBoxTwo.string
 
         // 文件字节映射到字符的数组
         const byteMapCharOne = [0]
