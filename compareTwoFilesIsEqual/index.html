@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .wrapper {
+        display: flex;
+        justify-content: space-around;
+        margin-top: 10px;
+      }
+
+      .file1-box,
+      .file2-box {
+        width: 30%;
+        min-height: 500px;
+        box-sizing: border-box;
+        font-size: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .file1-box {
+        background-color: yellow;
+      }
+
+      .file2-box {
+        background-color: yellowgreen;
+      }
+
+      button,
+      #res {
+        font-size: 30px;
+        width: 80%;
+        min-height: 50px;
+        margin: 10px 10%;
+      }
+
+      .error {
+        color: red;
+      }
+      .success {
+        color: green;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="file file1-box" ondrag>请放入第一个文件</div>
+      <div class="file file2-box">请放入第二个文件</div>
+    </div>
+
+    <button>比较两个文件</button>
+
+    <div id="res"></div>
+
+    <script>
+      const fileBoxes = document.querySelectorAll('.file')
+      const btn = document.querySelector('button')
+      btn.addEventListener('click', compare, false)
+
+      for (const fileBox of fileBoxes) {
+        fileBox.addEventListener(
+          'dragover',
+          function (e) {
+            e.stopPropagation()
+            e.preventDefault()
+          },
+          false
+        )
+
+        fileBox.addEventListener(
+          'drop',
+          function (e) {
+            e.stopPropagation()
+            e.preventDefault()
+
+            const file = e.dataTransfer.files[0]
+            console.log(file)
+
+            fileBox.file = file
+            fileBox.innerHTML = file.name
+
+            const fr = new FileReader()
+
+            fr.onload = function () {
+              console.log(this.result)
+
+              fileBox.arrayBuffer = this.result
+              fileBox.innerHTML += '<br>' + 'size：' + this.result.byteLength + '字节'
+            }
+
+            fr.readAsArrayBuffer(file)
+          },
+          false
+        )
+      }
+
+      function compare() {
+        const file1Buffer = document.querySelector('.file1-box').arrayBuffer
+        const file2Buffer = document.querySelector('.file2-box').arrayBuffer
+        const file1ByteArr = new Uint8Array(file1Buffer)
+        const file2ByteArr = new Uint8Array(file2Buffer)
+
+        // console.log(file1ByteArr);
+
+        let idx = 0
+        const resBox = document.querySelector('#res')
+        while (idx < file1ByteArr.length && idx < file2ByteArr.length) {
+          if (file1ByteArr[idx] !== file2ByteArr[idx]) {
+            resBox.innerHTML = `两个文件在第${idx + 1}个字节处发生不同<br>第一个文件的第${idx + 1}字节为：${file1ByteArr[idx]}<br>第二个文件的第${idx + 1}字节为：${file2ByteArr[idx]}`
+            resBox.className = 'error'
+            return
+          }
+          idx++
+        }
+        console.log(111);
+        if (idx < file1ByteArr.length) {
+          resBox.innerHTML = `两个文件在第${file2ByteArr.length}个字节处发生不同<br>第一个文件的第${file2ByteArr.length}字节为：${file1ByteArr[file2ByteArr.length]}<br>第二个文件的第${file2ByteArr.length}字节为：不存在`
+          resBox.className = 'error'
+
+        } else if (idx < file2ByteArr.length) {
+          resBox.innerHTML = `两个文件在第${file1ByteArr.length}个字节处发生不同<br>第一个文件的第${file1ByteArr.length}字节为：不存在<br>第二个文件的第${file1ByteArr.length}字节为：${file2ByteArr[file1ByteArr.length]}`
+          resBox.className = 'error'
+
+        } else {
+          resBox.innerHTML = `两个文件字节完全相同！`
+          resBox.className = 'success'
+
+        }
+      }
+    </script>
+  </body>
+</html>
