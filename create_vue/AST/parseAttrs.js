@@ -33,9 +33,27 @@ export default function parseAttrs(newTag) {
       let currentAttr = attrStr.substring(start, end)
       currentAttr = currentAttr && currentAttr.trim()
       if (currentAttr.length > 0) {
-        // 转换为对象格式
-        currentAttr = currentAttr.split('=')
-        const attrObj = { name: currentAttr[0] && currentAttr[0].trim(), value: currentAttr[1] && currentAttr[1].trim() }
+        // 转换为对象格式，也不能用split('=')，因为指令中可以能有比较的=== 和 !==
+        // 找到不在引号内的第一个=，然后分隔name 和 value
+        let attrInQuotes = false
+        let name
+        let value
+        let i = 0
+        for (let len = currentAttr.length; i < len; i++) {
+          const c = currentAttr[i]
+          if (c === '"') {
+            attrInQuotes = !attrInQuotes
+          }
+          if (!attrInQuotes && c === '=') {
+            break
+          }
+        }
+        name = currentAttr.substring(0, i)
+        value = currentAttr.substring(i + 1)
+
+        // currentAttr = currentAttr.split('=')
+        const attrObj = { name: name && name.trim(), value: value ? value.trim() : true }
+
         // 分类属性
         classifyAttr(attrObj, newTag, attrs, attrsMap)
         // 将start指向下一个属性的开头
@@ -60,7 +78,9 @@ function classifyAttr(attrObj, newTag, attrs, attrsMap) {
       attrObj.name = attrObj.name.substr(7)
     }
 
-    attrObj.value = attrObj.value.replace(/\"/g, '')
+    try {
+      attrObj.value = attrObj.value.replace(/\"/g, '')
+    } catch (error) {}
 
     // 类名 分为：staticClass 和 classBinding
     if (attrObj.name === 'class') {
@@ -104,9 +124,8 @@ function classifyAttr(attrObj, newTag, attrs, attrsMap) {
     attrObj.name = attrObj.name.substr(2)
     try {
       attrObj.value = attrObj.value && attrObj.value.replace(/\"/g, '')
-    } catch (error) {
-      console.log(attrObj);
-    }
+    } catch (error) {}
+
     parseVAttr(attrObj, newTag)
   }
   // 普通属性
@@ -159,9 +178,11 @@ function parseVAttr(attrObj, newTag) {
       newTag.else = true
       break
     // model后面会来加功能？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？？
+    case 'else-if':
+      newTag.elseIf = value
+      break
     case 'model':
     case 'if':
-    case 'else-if':
     default:
       newTag[name] = value
       break

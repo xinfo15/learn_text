@@ -40,6 +40,7 @@ export default function updateChildren(parentNode, oldChildren, newChildren) {
     // 新前 和 旧前
     else if (isSameVnode(newStartVnode, oldStartVnode)) {
       // newStartVnode.elm = oldStartVnode.elm
+      // console.log(oldStartVnode, newStartVnode);
       patch(oldStartVnode, newStartVnode)
       newStartVnode = newChildren[++newStartIdx]
       oldStartVnode = oldChildren[++oldStartIdx]
@@ -47,6 +48,7 @@ export default function updateChildren(parentNode, oldChildren, newChildren) {
     // 新后 和 旧后
     else if (isSameVnode(newEndVnode, oldEndVnode)) {
       // newEndVnode.elm = oldEndVnode.elm
+      // console.log(oldEndVnode, newEndVnode);
       patch(oldEndVnode, newEndVnode)
       newEndVnode = newChildren[--newEndIdx]
       oldEndVnode = oldChildren[--oldEndIdx]
@@ -54,6 +56,7 @@ export default function updateChildren(parentNode, oldChildren, newChildren) {
     // 新后 和 旧前
     else if (isSameVnode(newEndVnode, oldStartVnode)) {
       // newEndVnode.elm = oldStartVnode.elm
+      // console.log(oldStartVnode, newEndVnode);
       patch(oldStartVnode, newEndVnode)
       // 将新后和旧前的dom节点移动到旧后之后
       parentNode.insertBefore(oldChildren[oldStartIdx].elm, oldChildren[oldEndIdx].elm.nextSibling)
@@ -66,6 +69,7 @@ export default function updateChildren(parentNode, oldChildren, newChildren) {
     // 新前 和 旧后
     else if (isSameVnode(newStartVnode, oldEndVnode)) {
       // newStartVnode.elm = oldEndVnode.elm
+      // console.log(oldEndVnode, newStartVnode)
       patch(oldEndVnode, newStartVnode)
       // 将新前和旧后的dom节点移动到旧前之前
       parentNode.insertBefore(oldChildren[oldEndIdx].elm, oldChildren[oldStartIdx].elm)
@@ -93,10 +97,12 @@ export default function updateChildren(parentNode, oldChildren, newChildren) {
 
       // 如果新前节点在 旧子节点中不存在，则插入到旧前之前
       if (oldVnodeIdx === undefined) {
+        // console.log(oldStartVnode, newStartVnode);
         parentNode.insertBefore(createElement(newStartVnode), oldStartVnode.elm)
       }
       // 如果存在，则将旧子节点中的相同节点移动到旧前之前
       else {
+        // console.log(oldChildren[oldVnodeIdx], newStartVnode);
         // newStartVnode.elm = oldChildren[oldVnodeIdx].elm
         patch(oldChildren[oldVnodeIdx], newStartVnode)
         // 新前节点在 旧子节点中的相同节点 oldChildren[oldVnodeIdx]
@@ -118,7 +124,10 @@ export default function updateChildren(parentNode, oldChildren, newChildren) {
     // 2. 直接在dom子节点中，找到该插入的位置，就没有undefined的问题
     const reference = parentNode.children[newStartIdx]
 
+    // console.log(newStartIdx);
+
     for (let i = newStartIdx; i <= newEndIdx; i++) {
+      // console.log(newChildren[i]);
       parentNode.insertBefore(createElement(newChildren[i]), reference)
     }
   }

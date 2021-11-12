@@ -1,4 +1,4 @@
-import Vue from '../Vue/Vue.js'
+import Vue from './Vue/Vue.js'
 
 const templateStr = `
     <div class="box" v-on:click.stop.prevent="func" key="box" style="color: red;" data-src="a/1.jpg">
@@ -19,7 +19,8 @@ window.vm = new Vue({
     arr: ['1', '2', '3'],
     item: 'vue类基本功能实现',
     blogList: [],
-    hasComm: false
+    hasComm: false,
+    testIfElse: 5
   },
   methods: {
     async getBlogList() {

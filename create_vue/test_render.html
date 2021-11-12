@@ -30,7 +30,9 @@
           <h3 class="title">我是一个标题</h3>
           <ul>
             <li v-for="(   item  ,   idx  )   in    arr" :key="idx" :class="item">
-            {{item}}
+              <div v-if="false" style="color: green;">{{item}}</div>
+              <div v-else style="color: yellow;">{{item}}</div>
+              <div  style="color: pink;">{{item}}</div>
             </li>
           </ul>
         </div>

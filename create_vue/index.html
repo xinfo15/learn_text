@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <style>
-      img,video {
+      img,
+      video {
         width: 15%;
       }
     </style>
@@ -16,16 +17,24 @@
     <!-- 1. // @click="e => e.preventDefault()" 有bug -->
     <!-- <a class="ant-dropdown-link" @click="e => e.preventDefault()"> <a-icon type="more" /></a> -->
 
-    
     <script type="text/html" id="template">
       <div class="blog-list">
-        <!-- 2. 不能解析注释 -->
-        <div :class="arr" v-on:click.stop.prevent="func" key="box" style="color: red;" data-src="a/1.jpg">
+        <div :class="arr" v-on:click.stop.prevent="func" draggable key="box" style="color: red;" data-src="a/1.jpg">
           <h3 class="title">我是一个标题</h3>
+          <div v-if="testIfElse === 0">000</div>
+          <div v-else-if="testIfElse === 1">111</div>
+          <div v-else-if="testIfElse === 2">222</div>
+          <div v-else-if="testIfElse === 3">333</div>
+          <div v-else-if="testIfElse === 4">444</div>
+          <div v-else-if="testIfElse === 5">555</div>
+          <div v-else-if="testIfElse === 6">666</div>
+          <div v-else-if="testIfElse === 7">777</div>
+          <div v-else class="xiba999">999999</div>
           <ul>
             <li v-for="(   item  ,   idx  )   in    arr" :key="idx" :class="item">{{item}}</li>
           </ul>
         </div>
+
         <div class="blog-item panel no-radius shadow" v-for="(blogItem, blogIdx) in blogList" :key="`${blogItem.blog_id}_${blogIdx}`">
           <div class="blog-item-header">
             <div class="blog-label">
@@ -66,7 +75,7 @@
               <div class="blog-imgs">
                 <div class="blog-img" v-for="(blogImg, blogImgIdx) in blogItem.imgs" :key="`${blogItem.blog_id}_${blogIdx}_${blogImgIdx}`">
                   <img v-if="!blogImg.type" :src="blogImg.image" alt="" @click.stop="toggleMediaFullscreen" />
-                  <video v-if="blogImg.type" controls :src="blogImg.image" @click.stop="openMediaFullscreen" @touchstart="videoTriggerClickByTouch($event, 'start')" @touchend="videoTriggerClickByTouch($event, 'end')">您的浏览器不支持播放该视频！</video>
+                  <video v-else="blogImg.type" controls :src="blogImg.image" @click.stop="openMediaFullscreen" @touchstart="videoTriggerClickByTouch($event, 'start')" @touchend="videoTriggerClickByTouch($event, 'end')">您的浏览器不支持播放该视频！</video>
                 </div>
               </div>
             </div>

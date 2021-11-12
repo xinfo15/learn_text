@@ -22,6 +22,12 @@ function genarate(el) {
   if (el.if) {
     return genIf(el)
   }
+  // else
+  else if (el.else) {
+    return genElse(el)
+  } else if (el.elseIf) {
+    return genElseIf(el)
+  }
   // for
   else if (el.for) {
     return genFor(el)
@@ -172,8 +178,66 @@ function genEvents(events) {
 
 // 生成if
 function genIf(el) {
-  return  `_i(${el.if}, function() {
+  // 生成条件数组，给后面的 else if 或 else 使用
+  el.if = [el.if]
+  return `_i(${el.if}, function() {
     return ${genElement(el)}
   })`
 }
 
+// 生成else
+function genElse(el) {
+  const children = el.parent.children
+  const idx = children.indexOf(el)
+  const prevSibling = children[idx - 1]
+
+  if (!prevSibling || (!prevSibling.if && !prevSibling.elseIf)) {
+    throw Error('不是正确的v-else语句')
+  }
+
+  // 上面所有if 或 elseif 的条件数组
+  const prevExp = prevSibling.if || prevSibling.elseIf
+
+  if (!Array.isArray(prevExp)) throw Error('else if语句错误！！！')
+  let exp = ''
+  // 前面的所有条件，取反后 与 起来
+  for (let i = 0, len = prevExp.length; i < len; i++) {
+    const item = prevExp[i]
+
+    exp += `!(${item})${i !== len - 1 ? ' && ' : ''}`
+  }
+
+  return `_i(${exp}, function() {
+    return ${genElement(el)}
+  })`
+}
+
+// 生成else-if
+function genElseIf(el) {
+  const children = el.parent.children
+  const idx = children.indexOf(el)
+  const prevSibling = children[idx - 1]
+
+  if (!prevSibling || (!prevSibling.if && !prevSibling.elseIf)) {
+    throw Error('不是正确的v-else语句')
+  }
+
+  // 上面所有if 或 elseif 的条件数组
+  const prevExp = prevSibling.if || prevSibling.elseIf
+
+  if (!Array.isArray(prevExp)) throw Error('else if语句错误！！！')
+  // 前面的所有条件，取反后 与 起来，然后与上自己的条件
+  let exp = ''
+  for (const item of prevExp) {
+    exp += `!(${item}) && `
+  }
+  exp += el.elseIf
+
+  // 把自己的条件加入条件数组
+  prevExp.push(el.elseIf)
+  el.elseIf = prevExp
+
+  return `_i(${exp}, function() {
+    return ${genElement(el)}
+  })`
+}
