@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script type="module">
+      import defineReactive from './defineReactive.js'
+      import observe from './observe.js'
+      import Watcher from './Watcher.js'
+      import { parsePath, stringify } from './utils.js'
+
+      const obj = {
+        a: {
+          b: {
+            c: {
+              d: [1, 2, 3],
+              e: {
+                name: 'lizhegxin',
+                age: undefined,
+              },
+            },
+          },
+        },
+      }
+
+      {
+        const json = [
+          {
+            name: 'lizhengxin',
+            age: 20,
+          },
+          {
+            name: 'mayana',
+            age: 20,
+          },
+        ]
+
+        observe(obj)
+
+        json.unshift({
+          name: 'mayana',
+          age: 20,
+        })
+
+        json.splice(2, 1, {
+          name: '马后炮',
+          age: 20,
+        })
+
+        json[2].name = 'lixin'
+      }
+      // obj.a.b.c.e.push(4,5)
+      // obj.a.b.c.d = [4, 5, 6]
+
+      // new Watcher(obj, 'a.b.c', (newVal, oldVal) => {
+      //   console.log('监听a.b.c   的watcher生效了！！新值 = ' + stringify(newVal) + '  旧值 = ' + stringify(oldVal))
+      // })
+
+      new Watcher(obj, 'a.b.c.d', (newVal, oldVal) => {
+        console.log('监听a.b.c.e的watcher生效了！！新值 = ' + stringify(newVal) + '  旧值 = ' + stringify(oldVal))
+      })
+
+      // obj.a.b.c = 222
+      // obj.a.b.c.e.age = 20
+      // obj.a.b.c.e.name = 'mayana'
+      // obj.a.b.c.d = 110000000000
+      obj.a.b.c.d.push(4, 5, 6)
+      obj.a.b.c.d.push(7, 8)
+      console.log(obj)
+    </script>
+  </body>
+</html>
