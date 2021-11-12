@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .blog-item {
+        overflow: hidden;
+      }
+      .blog-imgs {
+        display: flex;
+      }
+
+      img {
+        width: 33%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+
+    <!-- 模板字符串 -->
+    <script type="text/html" mytype="template">
+      <div class="blog-list">
+        {{#data}}
+        <!-- 一条博客 -->
+        <div class="blog-item panel no-radius shadow">
+          <!-- 博客头部 -->
+          <div class="blog-item-header">
+            <div class="blog-label">
+              <a :href="`/blog/${blogItem.blog_id}`">{{ category_name }}</a>
+            </div>
+          </div>
+          <!-- 博客主要部分 -->
+          <div class="blog-item-main">
+            <!-- 博客内容的头部 -->
+            <div class="blog-item-main-header">
+              <div class="blog-user-avatar">
+                <router-link :to="`/space/${blogItem.user_info.user_id}`" :title="`${blogItem.user_info.nickname}的个人空间`">
+                  <a-avatar size="large" :src="blogItem.user_info.avatar" :alt="blogItem.user_info.nickname + '的头像'" />
+                </router-link>
+              </div>
+              <div class="blog-user-info">
+                <div class="blog-uname">
+                  <router-link :to="`/space/${blogItem.user_info.user_id}`" :title="`${blogItem.user_info.nickname}的个人空间`"> {{ user_info.nickname }}</router-link>
+                </div>
+                <div class="date">{{ create_time }}</div>
+              </div>
+            </div>
+            <!-- 博客的内容 -->
+            <div class="blog-item-main-content">
+              <div class="blog-content">{{char_content}}</div>
+              <!-- :style="`background-image: url(${blogImg.image})`" -->
+              <div class="blog-imgs">
+                {{#imgs}}
+                <div class="blog-img">
+                  <img v-if="!blogImg.type" src="{{image}}" alt="" />
+                </div>
+                {{/imgs}}
+              </div>
+            </div>
+          </div>
+        </div>
+        {{/data}}
+      </div>
+    </script>
+
+    <script type="module">
+      import Mustache from './index.js'
+      import observe from '../Observer/observe.js'
+
+      const template = document.querySelector('script[mytype=template]').innerText
+      
+      let data
+
+      function getBlogList() {
+        return fetch('http://tp.freshone.top/index/home/get_blog/id/-2', {
+          method: 'POST',
+          body: JSON.stringify({
+            page: 1,
+          }),
+          headers: { 'content-type': 'application/json' },
+        }).then((res) => res.json())
+      }
+
+      window.mustacheRender = function () {
+        const domStr = Mustache.render(template, data)
+        document.querySelector('#app').innerHTML = domStr
+      }
+
+      getBlogList().then((res) => {
+        data = res
+        console.log(data)
+        // 响应式监听data
+        observe(data)
+        window.mustacheRender()
+        // document.querySelector('#app').innerHTML = domStr
+      })
+
+      // const data = {
+      //   arr: [
+      //     { name: '小明', age: 12, sex: '男', hobbies: ['健身', '篮球'] },
+      //     { name: '小红', age: 11, sex: '女', hobbies: ['跑步', '化妆', 'xiba'] },
+      //     { name: '小强', age: 13, sex: '男', hobbies: ['打羽毛球', '编程'] },
+      //   ],
+      //   test: {
+      //     test: {
+      //       test: 'test',
+      //     },
+      //   },
+      // }
+    </script>
+  </body>
+</html>

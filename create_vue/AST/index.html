@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <!-- 1. // @click="e => e.preventDefault()" 有bug -->
+    <!-- <a class="ant-dropdown-link" @click="e => e.preventDefault()"> <a-icon type="more" /></a> -->
+
+    <!-- 2. 不能解析注释 -->
+    <!-- <div class="blog-item panel no-radius shadow" v-for="(blogItem, blogIdx) in blogList" :key="`${blogItem.blog_id}_${blogIdx}`">
+      <div class="blog-item-header">
+        <div class="blog-label">
+          <router-link :to="`/blog/${blogItem.blog_id}`">{{ blogItem.category_name }}</router-link>
+        </div>
+        <div class="blog-detail">
+          <a-badge dot v-if="blogItem.is_read === 0" class="mr8" @click="readMsg(blogItem, -2)">
+            <a-button size="small">未读</a-button>
+          </a-badge>
+          <a-dropdown :trigger="['click', 'hover']">
+            <a-menu slot="overlay">
+              <a-menu-item key="0">
+                <router-link :to="`/blog/${blogItem.blog_id}`">查看原文</router-link>
+              </a-menu-item>
+              <a-menu-item key="1" v-if="blogItem.is_mine">
+                <div class="remove-blog" @click="removeBlog(blogItem, blogIdx)">删除博客</div>
+              </a-menu-item>
+            </a-menu>
+          </a-dropdown>
+        </div>
+      </div>
+      <div class="blog-item-main">
+        <div class="blog-item-main-header">
+          <div class="blog-user-avatar">
+            <router-link :to="`/space/${blogItem.user_info.user_id}`" :title="`${blogItem.user_info.nickname}的个人空间`">
+              <a-avatar size="large" :src="blogItem.user_info.avatar" :alt="blogItem.user_info.nickname + '的头像'" />
+            </router-link>
+          </div>
+          <div class="blog-user-info">
+            <div class="blog-uname">
+              <router-link :to="`/space/${blogItem.user_info.user_id}`" :title="`${blogItem.user_info.nickname}的个人空间`"> {{ blogItem.user_info.nickname }}</router-link>
+            </div>
+            <div class="date">{{ blogItem.create_time }}</div>
+          </div>
+        </div>
+        <div class="blog-item-main-content">
+          <div class="blog-content" v-html="blogItem.char_content"></div>
+          <div class="blog-imgs">
+            <div class="blog-img" v-for="(blogImg, blogImgIdx) in blogItem.imgs" :key="`${blogItem.blog_id}_${blogIdx}_${blogImgIdx}`">
+              <img v-if="!blogImg.type" :data-src="blogImg.image" alt="" @click.stop="toggleMediaFullscreen" />
+              <video v-else controls :data-src="blogImg.image" @click.stop="openMediaFullscreen" @touchstart="videoTriggerClickByTouch($event, 'start')" @touchend="videoTriggerClickByTouch($event, 'end')">您的浏览器不支持播放该视频！</video>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="blog-item-footer">
+        <div class="blog-upvote" :class="{ active: blogItem.is_upvote }" @click="toggleUpvote(blogItem)">
+          <a-icon type="like" theme="filled" />
+          {{ blogItem.upvote_count || '点赞' }}
+        </div>
+        <div v-if="hasComm" class="blog-comm" :class="{ active: blogItem.collapseComm }" @click="toggleCollapseComm(blogItem, blogIdx)">
+          <a-icon type="message" theme="filled" />
+          {{ blogItem.comm_count || '评论' }}
+        </div>
+        <div v-else class="blog-comm">
+          <a-icon type="message" theme="filled" />
+          {{ blogItem.comm_count || '评论' }}
+        </div>
+        <div class="blog-colle" :class="{ active: blogItem.is_colle }" @click="toggleColle(blogItem)">
+          <a-icon type="star" theme="filled" />
+          {{ blogItem.colle_count || '收藏' }}
+        </div>
+      </div>
+    </div> -->
+
+    <script type="text/html" id="template">
+      <div class="blog-list">
+        <div :class="arr" v-on:click.stop.prevent="func" key="box" style="color: red;" data-src="a/1.jpg">
+          <h3 class="title">我是一个标题</h3>
+          <ul>
+            <li v-for="(   item  ,   idx  )   in    arr" :key="idx" :class="item">
+              {{item}}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </script>
+
+    <script type="module" src="./index.js"></script>
+  </body>
+</html>
