@@ -57,7 +57,9 @@ function classifyAttr(attrObj, newTag, attrs, attrsMap) {
     } else {
       attrObj.name = attrObj.name.substr(7)
     }
+
     attrObj.value = attrObj.value.replace(/\"/g, '')
+
     // 类名 分为：staticClass 和 classBinding
     if (attrObj.name === 'class') {
       newTag.classBinding = attrObj.value

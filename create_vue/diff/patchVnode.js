@@ -46,6 +46,8 @@ export default function patchVnode(oldVnode, newVnode) {
 
 // 最小化比较属性
 function patchAttrs(oldVnode, newVnode) {
+  if (!isObject(oldVnode.data)) oldVnode.data = {}
+  if (!isObject(newVnode.data)) newVnode.data = {}
   const oldData = oldVnode.data
   const newData = newVnode.data
 
@@ -57,20 +59,28 @@ function patchAttrs(oldVnode, newVnode) {
     oldVnode.elm.style = newData.style
   }
 
-  if (isObject(newData.attrs)) {
-    const newAttrs = newData.attrs
-    const oldAttrs = oldAttrs.attrs
-    let attrs = {}
-    Object.assign(attrs, newAttrs, oldAttrs)
+  if (!isObject(newData.attrs)) newData.attrs = {}
+  if (!isObject(oldData.attrs)) oldData.attrs = {}
 
-    for (const attr in attrs) {
-      if (newAttrs) {
+  const newAttrs = newData.attrs
+  const oldAttrs = oldData.attrs
+  let attrs = {}
+  Object.assign(attrs, newAttrs, oldAttrs)
+
+  for (const attr in attrs) {
+    const newAt = newAttrs[attr]
+    const oldAt = oldAttrs[attr]
+
+    // 如果新旧属性相同
+    if (newAt && oldAt) {
+      if (newAt !== oldAt) {
+        oldVnode.elm.setAttribute(attr, newAt)
       }
+    } else if (newAt) {
+      oldVnode.elm.setAttribute(attr, newAt)
+    } else {
+      oldVnode.elm.removeAttribute(attr)
     }
-
-    console.log(attrs)
-  } else if (isObject(oldData.attrs)) {
   }
 
-  // console.log(oldData, newData)
 }

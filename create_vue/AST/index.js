@@ -10,10 +10,11 @@ const templateStr = `
       </ul>
     </div>
 `
+
 window.vm = new Vue({
   el: '#app',
-  // template: '#template',
-  template: templateStr,
+  template: '#template',
+  // template: templateStr,
   data: {
     arr: ['1', '2', '3'],
     item: 'vue类基本功能实现',

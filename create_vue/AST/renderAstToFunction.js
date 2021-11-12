@@ -35,12 +35,12 @@ function genarate(el) {
 function genElement(el) {
   let code = ''
 
-  let children = []
+  let children = '['
   for (const child of el.children) {
-    children.push(genarate(child))
+    children += genarate(child) + ','
   }
 
-  children = '[' + children.join(',') + ']'
+  children += ']'
 
   let data = '{'
 
@@ -78,33 +78,8 @@ function genElement(el) {
   }
 
   // 事件监听器在 `on` 内，
-  // 但不再支持如 `v-on=keyup.enter` 这样的修饰器。
-  // 需要在处理函数中手动检查 keyCode。
   const events = el.events
-  if (events && typeof events === 'object') {
-    data += 'on: '
-    for (const event in events) {
-      if (events.hasOwnProperty.call(events, event)) {
-        const eventConfig = events[event]
-        const func = eventConfig.value
-        const modifier = eventConfig.modifier
-        data += '{' + event + ': function($event) {'
-        if (modifier && typeof modifier === 'object') {
-          const { stop, prevent } = modifier
-          if (stop) {
-            data += '$event.stopPropagation();'
-          }
-          if (prevent) {
-            data += '$event.preventDefault();'
-          }
-        }
-        data += func + '($event);}'
-
-        events[event] = code
-        data += '}'
-      }
-    }
-  }
+  data += genEvents(events)
 
   data += '}'
   code = `_c("${el.tag}", ${data}${children.length > 0 ? ',' + children : ''})`
@@ -134,7 +109,7 @@ function genText(el) {
     scanner.skipDelimiter('}}')
   }
 
-  return `_c(undefined, undefined, undefined, ${tokens.join('+')})`
+  return `_h(${tokens.join('+')}), `
 }
 
 // 生成for
@@ -147,3 +122,34 @@ function genFor(el) {
     return ${genElement(el)}
   })`
 }
+
+// 生成events
+function genEvents(events) {
+  let data = ''
+  if (events && typeof events === 'object') {
+    data += 'on: {'
+
+    for (const event in events) {
+      const eventConfig = events[event]
+      const func = eventConfig.value
+      data += event + ': function($event) {'
+      const modifier = eventConfig.modifier
+      if (modifier && typeof modifier === 'object') {
+        const { stop, prevent } = modifier
+        if (stop) {
+          data += '$event.stopPropagation();'
+        }
+        if (prevent) {
+          data += '$event.preventDefault();'
+        }
+      }
+      data += func + '($event);}, '
+    }
+    data += '},'
+  }
+
+  // console.log(data)
+
+  return data
+}
+

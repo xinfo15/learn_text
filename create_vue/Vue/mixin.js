@@ -2,10 +2,9 @@ import vnode from '../diff/vnode.js'
 
 export default function mixin(Vue) {
   Vue.prototype._c = vnode
-  Vue.prototype._s = function (name) {
-    return name
-  }
+  Vue.prototype._s = toString
   Vue.prototype._l = renderList
+  Vue.prototype._h = createTextVnode
 }
 
 // v-for
@@ -20,5 +19,19 @@ function renderList(exp, fn) {
     }
   }
 
+  // if(tokens.length) {
+  //   tokens[tokens.length - 1] = tokens[tokens.length - 1].slice(-1, 0)
+  // }
+
   return tokens
+}
+
+// 变量转换为字符串
+function toString(name) {
+  return name
+}
+
+// 创建文本vnode
+function createTextVnode(text) {
+  return vnode(undefined, undefined, undefined, text)
 }

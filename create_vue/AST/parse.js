@@ -21,15 +21,23 @@ export default function parse(templateStr) {
     let tag = scanner.scanUntilDelimiter('>')
     tag = tag && tag.trim()
     if (tag) {
+      // 注释节点
+      if (tag.indexOf('!--') === 0 && tag.lastIndexOf('--') === tag.length - '--'.length) {
+        // 注释节点不做什么 哈哈哈哈
+      }
       // 首节点
-      if (tag[0] !== '/') {
+      else if (tag[0] !== '/') {
         const newTag = { tag, type: 1, attrs: [], children: [] }
         // 将attrs从tag里面解析出来
         parseAttrs(newTag)
         // 加入栈顶的children里
         stack[stack.length - 1].children.push(newTag)
-        // 加入栈
-        stack.push(newTag)
+
+        // 双节点，需要加入栈；单节点则不需要
+        if (tag[tag.length - 1] !== '/') {
+          // 加入栈
+          stack.push(newTag)
+        }
       }
       // 尾节点
       else {

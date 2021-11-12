@@ -24,8 +24,9 @@ export default function createElement(vnode) {
     domEl.innerHTML = vnode.text
   } else if (hasChildren(vnode)) {
     // 当前节点有 children
+
     for (const child of vnode.children) {
-      domEl.appendChild(createElement(child))
+      if (isObject(child)) domEl.appendChild(createElement(child))
     }
   }
 
