@@ -28,16 +28,21 @@ export default function parse(templateStr) {
       // 首节点
       else if (tag[0] !== '/') {
         const newTag = { tag, type: 1, attrs: [], children: [] }
-        // 将attrs从tag里面解析出来
-        parseAttrs(newTag)
+        
         // 加入栈顶的children里
         stack[stack.length - 1].children.push(newTag)
-
+        
         // 双节点，需要加入栈；单节点则不需要
         if (tag[tag.length - 1] !== '/') {
           // 加入栈
           stack.push(newTag)
+        } 
+        // 单节点，删除tagName中最后的'/'
+        else {
+          newTag.tag = newTag.tag.slice(0, -1)
         }
+        // 将attrs从tag里面解析出来
+        parseAttrs(newTag)
       }
       // 尾节点
       else {

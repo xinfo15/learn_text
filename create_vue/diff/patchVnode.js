@@ -1,4 +1,4 @@
-import { isSameVnode, hasText, hasChildren, isObject } from './utils.js'
+import { isSameVnode, hasText, hasChildren, isObject, camelToLine } from './utils.js'
 import updateChildren from './updateChildren.js'
 import createElement from './createElement.js'
 
@@ -74,13 +74,12 @@ function patchAttrs(oldVnode, newVnode) {
     // 如果新旧属性相同
     if (newAt && oldAt) {
       if (newAt !== oldAt) {
-        oldVnode.elm.setAttribute(attr, newAt)
+        oldVnode.elm.setAttribute(camelToLine(attr), newAt)
       }
     } else if (newAt) {
-      oldVnode.elm.setAttribute(attr, newAt)
+      oldVnode.elm.setAttribute(camelToLine(attr), newAt)
     } else {
       oldVnode.elm.removeAttribute(attr)
     }
   }
-
 }

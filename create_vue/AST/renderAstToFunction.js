@@ -1,4 +1,5 @@
 import Scanner from '../mustache/Scanner.js'
+import { lineToCamel } from '../diff/utils.js'
 
 // 把ast转换为render函数
 // _c => h()
@@ -17,8 +18,12 @@ export function renderAstToFunction(el) {
 }
 
 function genarate(el) {
+  // if
+  if (el.if) {
+    return genIf(el)
+  }
   // for
-  if (el.for) {
+  else if (el.for) {
     return genFor(el)
   }
   // 元素节点
@@ -60,14 +65,9 @@ function genElement(el) {
   }
 
   // 普通的 HTML attribute
-  const attrs = el.attrs
-  if (Array.isArray(attrs)) {
-    const attrObj = {}
-    for (const attr of attrs) {
-      attrObj[attr.name] = attr.value
-    }
-    data += 'attrs: ' + JSON.stringify(attrObj) + ','
-  }
+  data += genAttr(el.attrs)
+
+  // console.log(atCode);
 
   // DOM property
   const domProps = {
@@ -112,6 +112,23 @@ function genText(el) {
   return `_h(${tokens.join('+')}), `
 }
 
+// 生成属性
+function genAttr(attrs) {
+  let atCode = ''
+  if (Array.isArray(attrs)) {
+    atCode += 'attrs: {'
+    for (const attr of attrs) {
+      // 以-结尾，直接删除-
+      if (attr.name[attr.name.length - 1] === '-') {
+        attr.name = attr.name.slice(0, -1)
+      }
+      atCode += lineToCamel(attr.name) + ': ' + attr.value + ','
+    }
+    atCode += '},'
+  }
+  return atCode
+}
+
 // 生成for
 function genFor(el) {
   const exp = el.for
@@ -151,5 +168,12 @@ function genEvents(events) {
   // console.log(data)
 
   return data
+}
+
+// 生成if
+function genIf(el) {
+  return  `_i(${el.if}, function() {
+    return ${genElement(el)}
+  })`
 }
 

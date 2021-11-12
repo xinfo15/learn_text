@@ -5,6 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <style>
+      img,video {
+        width: 15%;
+      }
+    </style>
   </head>
   <body>
     <div id="app"></div>
@@ -60,8 +65,8 @@
               <div class="blog-content" v-html="blogItem.char_content"></div>
               <div class="blog-imgs">
                 <div class="blog-img" v-for="(blogImg, blogImgIdx) in blogItem.imgs" :key="`${blogItem.blog_id}_${blogIdx}_${blogImgIdx}`">
-                  <img v-if="!blogImg.type" :data-src="blogImg.image" alt="" @click.stop="toggleMediaFullscreen" />
-                  <video v-else controls :data-src="blogImg.image" @click.stop="openMediaFullscreen" @touchstart="videoTriggerClickByTouch($event, 'start')" @touchend="videoTriggerClickByTouch($event, 'end')">您的浏览器不支持播放该视频！</video>
+                  <img v-if="!blogImg.type" :src="blogImg.image" alt="" @click.stop="toggleMediaFullscreen" />
+                  <video v-if="blogImg.type" controls :src="blogImg.image" @click.stop="openMediaFullscreen" @touchstart="videoTriggerClickByTouch($event, 'start')" @touchend="videoTriggerClickByTouch($event, 'end')">您的浏览器不支持播放该视频！</video>
                 </div>
               </div>
             </div>

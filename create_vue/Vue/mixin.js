@@ -5,6 +5,7 @@ export default function mixin(Vue) {
   Vue.prototype._s = toString
   Vue.prototype._l = renderList
   Vue.prototype._h = createTextVnode
+  Vue.prototype._i = ifConditions
 }
 
 // v-for
@@ -34,4 +35,9 @@ function toString(name) {
 // 创建文本vnode
 function createTextVnode(text) {
   return vnode(undefined, undefined, undefined, text)
+}
+
+function ifConditions(exp, fn) {
+  if (exp) return fn()
+  else return ''
 }

@@ -1,4 +1,4 @@
-import { isSameVnode, hasText, hasChildren, isObject } from './utils.js'
+import { isSameVnode, hasText, hasChildren, isObject, camelToLine } from './utils.js'
 
 /**
  * 将vnode 转换成 dom
@@ -50,7 +50,7 @@ function addAttrs(domEl, data) {
     for (const attr in attrs) {
       if (Object.hasOwnProperty.call(attrs, attr)) {
         const value = attrs[attr]
-        domEl.setAttribute(attr, value)
+        domEl.setAttribute(camelToLine(attr), value)
       }
     }
   }

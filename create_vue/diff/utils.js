@@ -33,3 +33,20 @@ export const hasChildren = function (vnode) {
 export const isObject = function (obj) {
   return obj && typeof obj === 'object'
 }
+
+/**
+ * 驼峰变为横线格式
+ */
+export const camelToLine = function(str) {
+  
+  return str.replace(/([a-z])([A-Z])/, (...args) => args[1] + '-' + args[2].toLowerCase())
+}
+
+/**
+ * 横线格式变为驼峰
+ * @param {*} str 
+ * @returns 
+ */
+export const lineToCamel = function(str) {
+  return str.replace(/([a-z])-([a-z])/, (...args) => args[1] + args[2].toUpperCase())
+}

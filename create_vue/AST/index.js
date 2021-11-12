@@ -19,6 +19,7 @@ window.vm = new Vue({
     arr: ['1', '2', '3'],
     item: 'vue类基本功能实现',
     blogList: [],
+    hasComm: false
   },
   methods: {
     async getBlogList() {
@@ -29,6 +30,10 @@ window.vm = new Vue({
         }),
         headers: { 'content-type': 'application/json' },
       }).then((res) => res.json())
+
+      for (const item of data) {
+        item.hasComm = false
+      }
 
       this.blogList = data
       // console.log(data)

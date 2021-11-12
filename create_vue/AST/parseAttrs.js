@@ -46,6 +46,8 @@ export default function parseAttrs(newTag) {
 
   newTag.attrs = attrs
   newTag.attrsMap = attrsMap
+
+  // console.log(newTag);
 }
 
 // 分类属性
