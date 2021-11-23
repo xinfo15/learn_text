@@ -1,6 +1,7 @@
 import { isSameVnode, hasText, hasChildren, isObject, camelToLine } from './utils.js'
 import updateChildren from './updateChildren.js'
 import createElement from './createElement.js'
+import { patchAttrs } from './patchAttrs.js'
 
 /**
  * 两个vnode相同的情况，抽出来单独做一个函数
@@ -40,46 +41,6 @@ export default function patchVnode(oldVnode, newVnode) {
 
       updateChildren(oldVnode.elm, oldVnode.children, newVnode.children)
       // diff
-    }
-  }
-}
-
-// 最小化比较属性
-function patchAttrs(oldVnode, newVnode) {
-  if (!isObject(oldVnode.data)) oldVnode.data = {}
-  if (!isObject(newVnode.data)) newVnode.data = {}
-  const oldData = oldVnode.data
-  const newData = newVnode.data
-
-  if (oldData.class !== newData.class) {
-    oldVnode.elm.className = newData.class
-  }
-
-  if (oldData.style !== newData.style) {
-    oldVnode.elm.style = newData.style
-  }
-
-  if (!isObject(newData.attrs)) newData.attrs = {}
-  if (!isObject(oldData.attrs)) oldData.attrs = {}
-
-  const newAttrs = newData.attrs
-  const oldAttrs = oldData.attrs
-  let attrs = {}
-  Object.assign(attrs, newAttrs, oldAttrs)
-
-  for (const attr in attrs) {
-    const newAt = newAttrs[attr]
-    const oldAt = oldAttrs[attr]
-
-    // 如果新旧属性相同
-    if (newAt && oldAt) {
-      if (newAt !== oldAt) {
-        oldVnode.elm.setAttribute(camelToLine(attr), newAt)
-      }
-    } else if (newAt) {
-      oldVnode.elm.setAttribute(camelToLine(attr), newAt)
-    } else {
-      oldVnode.elm.removeAttribute(attr)
     }
   }
 }

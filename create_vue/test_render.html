@@ -26,19 +26,46 @@
       window.vm = new Vue({
         el: '#app',
         template: `
-        <div class="box" v-on:click.stop.prevent="func" key="box" style="color: red;" data-src="a/1.jpg">
-          <h3 class="title">我是一个标题</h3>
-          <ul>
-            <li v-for="(   item  ,   idx  )   in    arr" :key="idx" :class="item">
-              <div v-if="false" style="color: green;">{{item}}</div>
-              <div v-else style="color: yellow;">{{item}}</div>
-              <div  style="color: pink;">{{item}}</div>
-            </li>
-          </ul>
+        <div class="cate-list">
+          <div class="cate-item" v-for="(cateItem, cateIdx) in cateList" :class="'cate-item' + cateItem.isActive ? 'active' : '' " :key="cateIdx">
+            {{ cateItem.name }}
+          </div>
         </div>
         `,
         data: {
           arr: ['1', '2', '3'],
+          cateList: [
+            {
+              id: 0,
+              name: '搞笑',
+              isActive: true,
+            },
+            {
+              id: 1,
+              name: '游戏',
+              isActive: false,
+            },
+            {
+              id: 2,
+              name: '电影',
+              isActive: false,
+            },
+            {
+              id: 3,
+              name: '现实',
+              isActive: false,
+            },
+            {
+              id: 4,
+              name: '编程',
+              isActive: false,
+            },
+            {
+              id: 5,
+              name: '美女',
+              isActive: false,
+            },
+          ],
         },
         methods: {
           func() {},

@@ -8,7 +8,7 @@ import { lineToCamel } from '../diff/utils.js'
 export function renderAstToFunction(el) {
   const code = genarate(el)
 
-  // console.log(code)
+  console.log(code)
 
   return new Function(`
     with (this) {
@@ -57,9 +57,10 @@ function genElement(el) {
 
   // 与 `v-bind=class` 的 API 相同，
   // 接受一个字符串、对象或字符串和对象组成的数组
-  const className = el.classBinding ?? el.staticClass
-  if (className) {
-    data += 'class: ' + className + ','
+  const classValue = el.classBinding ?? el.staticClass
+  console.log(classValue)
+  if (classValue) {
+    data += 'class: ' + classValue + ','
   }
   const key = el.key
   if (key) {
@@ -132,6 +133,7 @@ function genAttr(attrs) {
     }
     atCode += '},'
   }
+
   return atCode
 }
 
@@ -166,7 +168,12 @@ function genEvents(events) {
           data += '$event.preventDefault();'
         }
       }
-      data += func + '($event);}, '
+
+      if (func.indexOf('(') !== -1 && func.indexOf(')') !== -1) {
+        data += func + ';},'
+      } else {
+        data += func + '($event);}, '
+      }
     }
     data += '},'
   }

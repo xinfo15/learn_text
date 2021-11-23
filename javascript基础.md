@@ -92,8 +92,8 @@ Array.isArray(arr)
 ### 函数预编译
 
 1. 创建活动对象AO
-2. 找到所有声明的变量（var）和形参声明，去作为活动对象的属性，置为undefined
-3. 实参和形参值相统一，就是实参赋值给形参
+2. 找到所有var声明的变量和形参声明，去作为活动对象的属性，置为undefined
+3. 实参和形参值相统一
 4. 找到所有函数声明（不是表达式！）去作为活动对象的属性（会覆盖变量声明），然后将函数体赋值给它
 5. js解释执行
 
@@ -101,7 +101,7 @@ Array.isArray(arr)
 
 ### 标记清理（常用）
 
-会表示所有在内存中的变量，然后去掉所有**在上下文中的变量**或**被上下文中变量引用的变量**的标记，之后再有标记的变量就一定不在上下文中，并不能被上下文中的变量访问，随后垃圾回收就会清理这些带标记变量并回收内存。
+会标记所有在内存中的变量，然后去掉所有**在上下文中的变量**或**被上下文中变量引用的变量**的标记，之后再有标记的变量就一定不在上下文中，并不能被上下文中的变量访问，随后垃圾回收就会清理这些带标记变量并回收内存。
 
 ### 引用计数
 
@@ -325,11 +325,10 @@ class Son extends Father{}
 ## 箭头函数和普通函数的区别
 
 1. 箭头函数没有arguments
-2. 箭头函数没有this指针，只能使用包含上下文中的this
-3. 箭头函数不能使用super()，类构造普通函数中可以用
-4. 箭头函数不能使用new.target，普通函数可以
-5. 箭头函数不能用作构造函数
-6. 箭头函数没有prototype属性
+2. 箭头函数不能用作构造函数
+3. 箭头函数没有prototype属性
+4. 箭头函数没有this指针，只能使用包含上下文中的this
+5. 箭头函数不能使用new.target，普通函数可以
 
 ## 期约
 
@@ -406,20 +405,28 @@ xhr.onprogress = function(e) {
 xhr.abort()
 ```
 
-## 简单请求和复杂请求
+## 简单请求和复杂请求(跨域请求才有)
+
+浏览器限制，请求发送出去虽然返回结果被浏览器拦截，但是对服务器可能产生了影响；
+
+### 简单请求
+
+简单请求只能使用get、post、head这三个方法
+
+简单请求的 HTTP 头只能是 Accept/Accept-Language/Conent-Language/Content-Type 等
+
+简单请求的 Content-Type 头只能是 text/plain、multipart/form-data 或 application/x-www-form-urlencoded
+
+不是复杂请求就是简单请求，就发送一次请求
 
 ### 复杂请求
 
-复杂请求就是定义了自定义请求头部，使用了除get、post外的方法，定义了不同请求体内容类
+不是简单请求就是复杂请求
 
 复杂请求在第一次发送这种类型的请求时一共会发送两个请求
 
 1. 预检请求，使用Options方法，包含头部：Origin（源域名)、Access-Control-Request-Method(请求想要使用的方法)、Access-Control-Request-Header(请求定义的自定义头部)
 2. 正式请求
-
-### 简单请求
-
-不是复杂请求就是简单请求，就发送一次请求
 
 ### *凭据请求
 
@@ -993,6 +1000,12 @@ function throttle(callback, delay) {
 9. beforeDestroy 实例销毁前调用，此时实例完全可用
 10. destroyed 实例销毁后调用
 
+## 父子组件生命周期的执行顺序
+
+父beforeCreate-> 父created -> 父beforeMounte -> 子beforeCreate ->子created ->子beforeMount ->子 mounted -> 父mounted
+
+父beforeUpdate -> 子beforeUpdate -> 子updated -> 父updated
+
 ## 组件
 
 组件是可复用的vue实例
@@ -1044,9 +1057,10 @@ Vue.component('son', {
 2. 异步组件是指 按需异步加载组件
 
    ```js
+   vue允许你用一个工厂函数定义你的组件，这函数被调用的时，会异步解析你的组件定义，并缓存结果复用。
    Vue.component('component1', () => import('@/components/component1'))
    ```
-
+   
    
 
 ## 组件data为什么一定要定义成函数
@@ -1072,11 +1086,36 @@ Vue.component('son', {
 1. watch用于监听数据的变化
 2. 用于数据变化时执行异步操作或开销比较大的操作
 
+## nextTick机制
+
+![image-20211117175010290](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211117175010290.png)
 
 
 
+```js
+const queue = [] 是保存需要执行更新dom操作的watcher
+const callbacks = [] 是保存下一次tick需要执行的回调函数
 
+解决当前主执行栈中的代码多次更新数据造成的多次更新vnode，所以使用异步更新，同一个更新任务只会加入队列一次。
+```
 
+## vue2 和 vue3 的区别
+
+### 数据响应式
+
+1. vue2 使用 Object.defineProperty()不能响应式监听对象新增属性和删除属性，以及不能直接通过下标修改数组元素。vue3 使用 Proxy 监听对象可以实现。
+
+2. vue3新增composition（组合式） API，将data，methods、生命周期钩子函数都写在一堆，然后封装成一个hook，将同一功能的代码组合在一起。不用再像vue2那样，要去data里定义数据、methods里定义方法、生命周期钩子里边写代码，代码关联系不高。
+
+3. vue3 优化了更新
+
+   ```js
+   1. 事件缓存，定义了事件，就会缓存，下一次执行渲染函数，就不会重新构建
+   2. 静态标记，在生成渲染函数的过程中，打上patchFlags，然后在patch的过程中判断标记来优化diff
+   3. 静态提升，将不会变的节点或属性，将他们序列化为字符串，以此减少渲染成本，例：_createStaticVnode("<div><span class=\"foo\"></span><span class=\"foo\"></span><span class=\"foo\"></span><span class=\"foo\"></span><span class=\"foo\"></span></div>", 1)
+   ```
+
+   
 
 # sql语句复习
 
@@ -1262,7 +1301,7 @@ select create_time, date_format(create_time, '%Y-%m-%d %H:%i:%s') from tb_blog
 
 安全原理，结合了对称加密和非对称加密的优点，使用非对称加密传输 对称加密的秘钥，弥补了在传输过程中可能被截取对称加密秘钥的问题 和 完全使用非对称加密速度远比对称加密慢很多的问题
 
-<img src="https://segmentfault.com/img/bVbCCMD" alt="SSL : TLS 握手过程"  />
+<img src="https://segmentfault.com/img/bVbCCMD" alt="SSL : TLS 握手过程" style="zoom: 150%;" />
 
 1. **client hello**消息：客户端向服务端发送**client hello**消息发起握手请求，该消息包含了客户端所支持的 **TLS版本**、**加密算法的组合**以及一个随机字符串"**client random**"
 2. "server hello"消息：服务端收到握手请求向服务端返回“server hello”消息，该消息包含了**`CA`证书、选择的加密算法组合**以及一个随机字符串"**server random**"
@@ -1286,11 +1325,11 @@ select create_time, date_format(create_time, '%Y-%m-%d %H:%i:%s') from tb_blog
 
 1. **缓存处理**
 
-   **HTTP1.0**主要使用If-Modified-Since和Expires来做为缓存判断的标准，**HTTP1.1**则新增了更多缓存控制策略Entity tag、If-Unmodified-Since、If-Match、If-None-Match、cache-control等等。
+   **HTTP1.0**主要使用If-Modified-Since和Expires来做为缓存判断的标准，**HTTP1.1**则新增了更多缓存控制策略Entity tag、If-None-Match、cache-control等等。
 
 2. **长连接**
 
-   **HTTP1.0**默认短连接，即没发送一次HTTP请求就要新建一个TCP连接，浪费了很多资源在新建连接和销毁连接上；**HTTP1.1**则默认长连接，即建立一个TCP连接可以很松很多条HTTP请求，减少了议和关闭连接的消耗。
+   **HTTP1.0**默认短连接，即没发送一次HTTP请求就要新建一个TCP连接，浪费了很多资源在新建连接和销毁连接上；**HTTP1.1**则默认长连接，即建立一个TCP连接可以发送多条HTTP请求，减少了建立关闭连接的消耗。
 
 3. **带宽优化**
 

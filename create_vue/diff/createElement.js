@@ -1,4 +1,5 @@
 import { isSameVnode, hasText, hasChildren, isObject, camelToLine } from './utils.js'
+import { patchAttrs } from './patchAttrs.js'
 
 /**
  * 将vnode 转换成 dom
@@ -10,7 +11,8 @@ export default function createElement(vnode) {
   // 元素节点
   if (vnode.sel) {
     domEl = document.createElement(vnode.sel)
-    addAttrs(domEl, vnode.data)
+    // 属性上树，模拟一个属性为空的vnode
+    patchAttrs({ elm: domEl }, vnode)
   }
   // 文本节点
   else {
@@ -33,35 +35,35 @@ export default function createElement(vnode) {
   return domEl
 }
 
-// 属性上树
-function addAttrs(domEl, data) {
-  if (!data || typeof data !== 'object') return
-  const { style, attrs, on, domProps } = data
+// // 属性上树
+// function addAttrs(domEl, data) {
+//   if (!data || typeof data !== 'object') return
+//   const { style, attrs, on, domProps } = data
 
-  if (data.class) {
-    domEl.className = data.class
-  }
+//   if (data.class) {
+//     domEl.className = data.class
+//   }
 
-  if (style) {
-    domEl.style = style
-  }
+//   if (style) {
+//     domEl.style = style
+//   }
 
-  if (attrs && typeof attrs === 'object') {
-    for (const attr in attrs) {
-      if (Object.hasOwnProperty.call(attrs, attr)) {
-        const value = attrs[attr]
-        domEl.setAttribute(camelToLine(attr), value)
-      }
-    }
-  }
+//   if (attrs && typeof attrs === 'object') {
+//     for (const attr in attrs) {
+//       if (Object.hasOwnProperty.call(attrs, attr)) {
+//         const value = attrs[attr]
+//         domEl.setAttribute(camelToLine(attr), value)
+//       }
+//     }
+//   }
 
-  if (isObject(on)) {
-    for (const event in on) {
-      if (Object.hasOwnProperty.call(on, event)) {
-        const func = on[event]
+//   if (isObject(on)) {
+//     for (const event in on) {
+//       if (Object.hasOwnProperty.call(on, event)) {
+//         const func = on[event]
 
-        domEl.addEventListener(event, func, false)
-      }
-    }
-  }
-}
+//         domEl.addEventListener(event, func, false)
+//       }
+//     }
+//   }
+// }

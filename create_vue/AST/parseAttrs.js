@@ -53,7 +53,7 @@ export default function parseAttrs(newTag) {
 
         // currentAttr = currentAttr.split('=')
         const attrObj = { name: name && name.trim(), value: value ? value.trim() : true }
-
+        // console.log(attrObj);
         // 分类属性
         classifyAttr(attrObj, newTag, attrs, attrsMap)
         // 将start指向下一个属性的开头
@@ -85,6 +85,7 @@ function classifyAttr(attrObj, newTag, attrs, attrsMap) {
     // 类名 分为：staticClass 和 classBinding
     if (attrObj.name === 'class') {
       newTag.classBinding = attrObj.value
+
       return
     }
   }

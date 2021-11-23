@@ -1,26 +1,46 @@
 import Vue from './Vue/Vue.js'
 
-const templateStr = `
-    <div class="box" v-on:click.stop.prevent="func" key="box" style="color: red;" data-src="a/1.jpg">
-      <h3 class="title">我是一个标题</h3>
-      <ul>
-        <li v-for="(   item  ,   idx  )   in    arr" :key="idx" :class="item">
-        {{item}}
-        </li>
-      </ul>
-    </div>
-`
-
 window.vm = new Vue({
   el: '#app',
   template: '#template',
-  // template: templateStr,
   data: {
     arr: ['1', '2', '3'],
     item: 'vue类基本功能实现',
     blogList: [],
     hasComm: false,
-    testIfElse: 5
+    testIfElse: 5,
+    cateList: [
+      {
+        id: 0,
+        name: '搞笑',
+        isActive: true,
+      },
+      {
+        id: 1,
+        name: '游戏',
+        isActive: false,
+      },
+      {
+        id: 2,
+        name: '电影',
+        isActive: false,
+      },
+      {
+        id: 3,
+        name: '现实',
+        isActive: false,
+      },
+      {
+        id: 4,
+        name: '编程',
+        isActive: false,
+      },
+      {
+        id: 5,
+        name: '美女',
+        isActive: false,
+      },
+    ],
   },
   methods: {
     async getBlogList() {
@@ -41,6 +61,21 @@ window.vm = new Vue({
     },
     func(e) {
       console.log(e)
+    },
+    changeCateActive(e, id) {
+      const cateList = this.cateList
+
+      for (const cateItem of cateList) {
+        if (cateItem.id !== id) {
+          if (cateItem.isActive === true) {
+            cateItem.isActive = false
+          }
+        } else {
+          if (cateItem.isActive === false) {
+            cateItem.isActive = true
+          }
+        }
+      }
     },
   },
   created() {

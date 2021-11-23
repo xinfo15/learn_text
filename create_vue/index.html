@@ -10,6 +10,30 @@
       video {
         width: 15%;
       }
+
+      .cate-list {
+        display: flex;
+      }
+
+      .cate-item {
+        flex: 1;
+        margin-right: 50px;
+        background-color: rgb(240, 241, 247);
+        color: rgb(134, 144, 156);
+        height: 35px;
+        line-height: 35px;
+        text-align: center;
+        cursor: pointer;
+      }
+
+      .cate-item:not(.active):hover {
+        background-color: rgb(229, 230, 235);
+      }
+
+      .active {
+        background-color: rgb(232, 243, 255);
+        color: rgb(95, 128, 255);
+      }
     </style>
   </head>
   <body>
@@ -19,7 +43,7 @@
 
     <script type="text/html" id="template">
       <div class="blog-list">
-        <div :class="arr" v-on:click.stop.prevent="func" draggable key="box" style="color: red;" data-src="a/1.jpg">
+        <!-- <div :class="arr" v-on:click.stop.prevent="func" draggable key="box" style="color: red;" data-src="a/1.jpg">
           <h3 class="title">我是一个标题</h3>
           <div v-if="testIfElse === 0">000</div>
           <div v-else-if="testIfElse === 1">111</div>
@@ -33,9 +57,13 @@
           <ul>
             <li v-for="(   item  ,   idx  )   in    arr" :key="idx" :class="item">{{item}}</li>
           </ul>
+        </div> -->
+
+        <div class="cate-list">
+          <div :class="{'cate-item': true, active: cateItem.isActive}" @click="changeCateActive($event, cateItem.id)" v-for="(cateItem, cateIdx) in cateList" :key="cateIdx" my-name="lizhengxin" my-gf="mayana" my-age="20" my-gender="male" my-height="170" my-weight="72kg">{{ cateItem.name }}</div>
         </div>
 
-        <div class="blog-item panel no-radius shadow" v-for="(blogItem, blogIdx) in blogList" :key="`${blogItem.blog_id}_${blogIdx}`">
+        <!-- <div class="blog-item panel no-radius shadow" v-for="(blogItem, blogIdx) in blogList" :key="`${blogItem.blog_id}_${blogIdx}`">
           <div class="blog-item-header">
             <div class="blog-label">
               <router-link :to="`/blog/${blogItem.blog_id}`">{{ blogItem.category_name }}</router-link>
@@ -98,7 +126,7 @@
               {{ blogItem.colle_count || '收藏' }}
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
     </script>
 
