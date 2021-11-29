@@ -1496,3 +1496,79 @@ select create_time, date_format(create_time, '%Y-%m-%d %H:%i:%s') from tb_blog
   502 Bad Gateway 表示扮演网关 或 代理 的服务器，从上游服务器接收到的响应式无效的
 
   503 Service Unavailable 表示服务器 过载 或 维护 暂时无法处理请求
+
+# webpack
+
+## loader
+
+识别webpack不认识的模块，并解析模块
+
+![image-20211125102026563](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211125102026563.png)
+
+![image-20211125102543200](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211125102543200.png)
+
+![image-20211125102610900](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211125102610900.png)
+
+![image-20211125103837621](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211125103837621.png)
+
+![image-20211125103945898](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211125103945898.png)
+
+![image-20211125104512231](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211125104512231.png)
+
+![image-20211125105003941](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211125105003941.png)
+
+![image-20211125110321679](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211125110321679.png)
+
+![image-20211125110419880](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211125110419880.png)
+
+![image-20211125110649948](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211125110649948.png)
+
+![image-20211125110744522](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211125110744522.png)
+
+![image-20211125110908461](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211125110908461.png)
+
+![image-20211125112252655](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211125112252655.png)
+
+![image-20211125113248113](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211125113248113.png)
+
+![image-20211125113718819](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211125113718819.png)
+
+![image-20211125113723979](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211125113723979.png)
+
+![image-20211125134718285](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211125134718285.png)
+
+![image-20211125135313468](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211125135313468.png)
+
+![image-20211126224046052](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211126224046052.png)
+
+![image-20211126225631011](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211126225631011.png)
+
+![image-20211126230224713](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211126230224713.png)
+
+![image-20211126230512406](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211126230512406.png)
+
+![image-20211126232721501](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211126232721501.png)
+
+![image-20211126231534955](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211126231534955.png)
+
+![image-20211126231545376](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211126231545376.png)
+
+![image-20211127094049007](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211127094049007.png)
+
+## 提取vue-cli webpack配置
+
+![image-20211127101511107](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211127101511107.png)
+
+
+
+# ts
+
+![image-20211126113627319](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211126113627319.png)
+
+![image-20211126113805425](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211126113805425.png)
+
+![image-20211126114032648](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\image-20211126114032648.png)
+
+## 接口
+
+接口是用来限制类或对象的结构的规范
